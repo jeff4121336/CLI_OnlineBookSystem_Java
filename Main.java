@@ -4,6 +4,12 @@ import java.util.Scanner;
 import java.time.format.DateTimeFormatter;  
 import java.time.LocalDateTime;    
 
+import java.sql.*;
+
+/* 1. Connect to the intranet (e.g. connect to CSE VPN)
+ * 2. javac -cp .\lib\ojdbc10-19.3.0.0.jar Main.java;java -cp .\lib\ojdbc10-19.3.0.0.jar  Main.java
+ */
+
 /* https://stackoverflow.com/questions/180158/how-do-i-time-a-methods-execution-in-java 
  * https://stackoverflow.com/questions/2010284/how-to-get-the-current-date-and-time 
 */
@@ -114,7 +120,37 @@ public class Main {
          * 4. N Most Popilar Books
          */
     }
+
+    public static class Database {
+        final String url = "jdbc:oracle:thin:@//db18.cse.cuhk.edu.hk:1521/oradb.cse.cuhk.edu.hk";
+        final String user = "h022";
+        final String password = "GackTels";
+        private Connection conn;
+
+        public void connect() throws SQLException {
+            DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
+            conn = DriverManager.getConnection(url, user, password);
+        }
+    }
+
     public static void main(String[] args) {
+        Database db = new Database();
+        try{
+            System.out.println("conncecting...");
+            db.connect();
+            Statement stmt = db.conn.createStatement();
+            String query = "SELECT * FROM Book";
+            ResultSet rs = stmt.executeQuery( query );
+            // loop through result tuples (rs is a cursor)
+            while ( rs.next() ) {
+            String s = rs.getString("ISBN");
+            //Int n = rs.getInt('rating');
+            System.out.println( s + ' ');
+            }
+        }catch(Exception e){ 
+            System.out.println(e);
+        } 
+
         int action;
         action = PrintScan();
 
