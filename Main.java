@@ -9,7 +9,7 @@ import java.sql.*;
 /* 1. Connect to the intranet (e.g. connect to CSE VPN)
  * 2. javac -cp .\lib\ojdbc10-19.3.0.0.jar Main.java;java -cp .\lib\ojdbc10-19.3.0.0.jar  Main.java
  */
-
+/* test */
 /* https://stackoverflow.com/questions/180158/how-do-i-time-a-methods-execution-in-java 
  * https://stackoverflow.com/questions/2010284/how-to-get-the-current-date-and-time 
 */
