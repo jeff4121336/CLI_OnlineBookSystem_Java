@@ -2,9 +2,7 @@ package dbaction;
 
 import java.util.Scanner;
 
-
 public class dbinput {
-
 
     public static int PrintScan(int min, int max, Scanner s) {
         int input = -1;

@@ -9,7 +9,7 @@ public class DataBase {
       final String password = "GackTels";
       final Connection conn;
       
-      try{
+    try{
         System.out.println("connecting...");
         DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
         conn = DriverManager.getConnection(url, user, password); //connect to JDBC
@@ -29,7 +29,7 @@ public class DataBase {
     } 
     }  
     /* Function 1 - Database Init */
-    public void DataBaseInit() {
+      public void DataBaseInit() {
           /* 1. File Read io
            * 2. DataBase Connect and Init
            * 3. INSERT
@@ -39,14 +39,15 @@ public class DataBase {
       }
       /* Function 2 - Customer Oper */
       public void BookSearching() {
-      //PreparedStatement cstmt = conn.prepareStatement("");
+        System.out.println("Book Seraching!");
+        //PreparedStatement cstmt = conn.prepareStatement("");
           
       }
       public void PlacingOrder() {
-        
+       System.out.println("Placing Order!");
       }
       public void CheckHistoryOrder() {
-        
+        System.out.println("CheckHistoryOrder");
       }
       /* Fuction 3 - Bookstore Oper */
       public void BookStoreOper() {
