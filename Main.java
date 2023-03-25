@@ -1,3 +1,4 @@
+import java.util.Scanner;
 
 import booksystem.*;
 import dbaction.*;
@@ -7,14 +8,20 @@ import dbaction.*;
  */
 
 public class Main {
+
+
     public static void main(String[] args){
         DataBase db = new DataBase();
         BookSystem bs = new BookSystem(db);
-        dbinput scan = new dbinput();
+        
+        final Scanner scan = new Scanner(System.in);
+
         int action;
         bs.StartingMenu();
-        action = scan.PrintScan(1, 4);
-        bs.OperationCall(action);
+        // Scanner _sscan = new Scanner(System.in);
+        action = dbinput.PrintScan(1, 4, scan);
+        bs.OperationCall(action, scan);
+        scan.close();
     }
 }
 
