@@ -41,13 +41,27 @@ public class DataBase {
       public void BookSearching() {
         System.out.println("Book Seraching!");
         //PreparedStatement cstmt = conn.prepareStatement("");
+        //cstmt.setString();
+        //cstmt.setString();
+        //...
+        //ResultSet a = cstmt.executeQuery();
           
       }
       public void PlacingOrder() {
        System.out.println("Placing Order!");
+        //PreparedStatement cstmt = conn.prepareStatement("");
+        //cstmt.setString();
+        //cstmt.setString();
+        //...
+        //ResultSet a = cstmt.executeQuery();
       }
       public void CheckHistoryOrder() {
         System.out.println("CheckHistoryOrder");
+        //PreparedStatement cstmt = conn.prepareStatement("");
+        //cstmt.setString();
+        //cstmt.setString();
+        //...
+        //ResultSet a = cstmt.executeQuery();
       }
       /* Fuction 3 - Bookstore Oper */
       public void BookStoreOper() {
