@@ -1,6 +1,8 @@
 package booksystem;
 
 
+import java.sql.SQLException;
+
 // import java.util.Scanner;
 
 import java.util.Scanner;
@@ -12,10 +14,10 @@ public class BookSystem{
     /* Comment out the two lines if needed (error may occur if not commenting and not using it)
      * This will be the database we working on 
     */
-    //private DataBase db;
+    private DataBase db;
 
     public BookSystem(DataBase db) {
-    //    this.db = db;
+        this.db = db;
     }
 
 
@@ -31,13 +33,23 @@ public class BookSystem{
     public void OperationCall(int i, Scanner s) {
         switch (i) {
             case 1:
-                Operation_1_Menu(s);
+                try{
+                    Operation_1_Menu(s);
+                }catch(SQLException e){
+                    System.out.println(e);
+                }
+                System.out.println("Press enter to continue");
+                s.nextLine();
                 break;
             case 2:
                 Operation_2_Menu(s);
+                System.out.println("Press enter to continue");
+                s.nextLine();
                 break;
             case 3:
                 Operation_3_Menu(s);
+                System.out.println("Press enter to continue");
+                s.nextLine();
                 break;
             case 4:
                 Operation_4_Menu(s);
@@ -45,14 +57,14 @@ public class BookSystem{
         }
     }
 
-    private void Operation_1_Menu(Scanner s) {
+    private void Operation_1_Menu(Scanner s) throws SQLException {
         System.out.println("\n==== Database Initization - Loading init record from local files =====");
         /* call the function that you fetch the record
          * write the function in dbaction/DataBase.java
          * 
          * no static method for this part 
          */
-
+        db.DataBaseInit();
     }
 
     private void Operation_2_Menu(Scanner s) {
@@ -102,8 +114,7 @@ public class BookSystem{
 
     /* um... Not sure this part need what */
     private void Operation_4_Menu(Scanner s) {
-        System.out.println("\n==== Other Utilities - Please choose from the following operation =====");
-        System.out.println("\n> 1. sf\n> 2. f\n> 3. x");
+        
     }
 
 }
