@@ -180,5 +180,43 @@ public class DataBase {
         System.out.println("An error occurred: "+e);
       }
     }   
+    public void Order_query(Scanner s) {
+      try {    
+        // Retrieve orders in "ordered" status
+        PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ORDER_ WHERE Shipping_Status=? ORDER BY OID");
+        pstmt.setString(1, "ordered");
+        ResultSet rs = pstmt.executeQuery();
+        System.out.println("The following orders are still in the ordered status:");
+        while (rs.next()) {
+            System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getDate("Order_Date") + " Shipping Status: " + rs.getString("Shipping_Status"));
+        }
+        rs.close();
+        pstmt.close();
+    
+        // Retrieve orders in "shipped" status
+        pstmt = conn.prepareStatement("SELECT * FROM ORDER_ WHERE Shipping_Status=? ORDER BY OID");
+        pstmt.setString(1, "shipped");
+        rs = pstmt.executeQuery();
+        System.out.println("\nThe following orders are in the shipped status:");
+        while (rs.next()) {
+            System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getDate("Order_Date") + " Shipping Status: " + rs.getString("Shipping_Status"));
+        }
+        rs.close();
+        pstmt.close();
+    
+        // Retrieve orders in "received" status
+        pstmt = conn.prepareStatement("SELECT * FROM ORDER_ WHERE Shipping_Status=? ORDER BY OID");
+        pstmt.setString(1, "received");
+        rs = pstmt.executeQuery();
+        System.out.println("\nThe following orders are in the received status:");
+        while (rs.next()) {
+            System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getDate("Order_Date") + " Shipping Status: " + rs.getString("Shipping_Status"));
+        }
+        rs.close();
+        pstmt.close();
+    } catch (SQLException e) {
+        System.out.println("An error occurred: " + e);
+    }    
+    }   
   }
   

@@ -58,10 +58,7 @@ public class Order {
     public void update_shipping_status(Connection conn,String OID,String Shipping_Status) throws SQLException{
         // update shipping status
         try {
-
-            PreparedStatement check = conn.prepareStatement(
-            "SELECT * FROM ORDER_ Where OID = ?"
-            );
+            PreparedStatement check = conn.prepareStatement("SELECT * FROM ORDER_ Where OID = ?");
             check.setString(1, OID);
             ResultSet rs = check.executeQuery();
     
@@ -84,12 +81,26 @@ public class Order {
                 System.out.println("ERROR: No update is done");
                 return;
             }
-
-
-
             
         } catch (SQLException e) {
             System.out.println(e+"in order insertion");
+        }
+
+    }
+    public void order_query(Connection conn) throws SQLException{
+        // update shipping status
+        try {
+            PreparedStatement check = conn.prepareStatement(
+            "SELECT * FROM ORDER_ Where OID = ?"
+            );
+            check.setString(1, OID);
+            ResultSet rs = check.executeQuery();
+            while (rs.next()) {
+
+            } 
+            
+        } catch (SQLException e) {
+            System.out.println(e+"in order order query");
         }
 
     }
