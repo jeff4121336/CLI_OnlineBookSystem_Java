@@ -164,10 +164,18 @@ public class DataBase {
     public void Order_update(Scanner s) {
       System.out.println("Please enter the order ID that you would like to update the shipping status: ");
       String order_id = s.nextLine().toLowerCase();
-    
-      System.out.println("Enter the new status for the order (ordered, shipped, received): ");
-      String order_state = s.nextLine().toLowerCase();
-      System.out.println(order_id + " " + order_state);
+      String order_state;
+      do {
+          System.out.println("Enter the new status for the order (ordered, shipped, received): ");
+          order_state = s.nextLine().toLowerCase();
+      } while (!order_state.equals("ordered") && !order_state.equals("shipped") && !order_state.equals("received"));
+      
+      try {
+        Order order = new Order();
+        order.update_shipping_status(conn, order_id, order_state);
+      } catch (SQLException e) {
+        System.out.println("An error occurred: "+e);
+      }
     }   
   }
   

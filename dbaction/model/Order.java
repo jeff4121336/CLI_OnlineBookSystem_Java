@@ -3,13 +3,15 @@ package dbaction.model;
 import java.sql.*;
 
 public class Order {
-     private String OID;
+    private String OID;
     private String CID;
     private Date Order_Date;
     private String ISBN;
     private int Order_Quantity;
     private String Shipping_Status;
     
+    public Order(){
+    }
     public Order(String OID, String CID, Date Order_Date, String ISBN, int Order_Quantity, String Shipping_Status){
         this.OID = OID;
         this.CID = CID;
@@ -52,5 +54,18 @@ public class Order {
         } catch (SQLException e) {
             System.out.println(e+"in purchaser insertion");
         }
+    }
+    public void update_shipping_status(Connection conn,String OID,String Shipping_Status) throws SQLException{
+        // update shipping status
+        try {
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE ORDER_ SET Shipping_Status = ? WHERE OID = ?");
+            pstmt.setString(1, Shipping_Status);
+            pstmt.setString(2, OID);
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e+"in order insertion");
+        }
+
     }
 }
