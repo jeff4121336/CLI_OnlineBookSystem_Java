@@ -42,8 +42,8 @@ public class DataBase {
         String query = "DROP TABLE "+ table;
         try {
           stmt.execute(query);
-        } catch (SQLException e) {
-          System.out.println(e+query); // should be commented out at the end // don't know how to implement "drop if table exist" so I just throw away the error if it happened
+        } catch (SQLException e) {  // don't know how to implement "drop if table exist" so I just throw away the error if it happened
+          System.out.println(e+query); // for dubugging: should be commented out at the end
         }
       }
       stmt.close();
@@ -125,7 +125,7 @@ public class DataBase {
       DropAllTables();
       CreateAllTables();
       DataInit();
-      System.out.println("initialization succeeded");
+      System.out.println("initialization finished");
     }
     /* Function 2 - Customer Oper */
     public void BookSearching() {

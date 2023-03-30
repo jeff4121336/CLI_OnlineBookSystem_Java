@@ -1,6 +1,7 @@
 package dbaction.model;
 
 import java.sql.*;
+import java.util.Arrays;
 
 public class Book {
     private String ISBN;
@@ -8,11 +9,11 @@ public class Book {
     private String[] Authors;
     private int Price;
     private int Inventory_Quantity;
-
+    
     public Book(){
         
     }
-
+    
     public Book(String ISBN, String Title, String[] Authors, int Price, int Inventory_Quantity){
         this.ISBN = ISBN;
         this.Title = Title;
@@ -20,8 +21,66 @@ public class Book {
         this.Price = Price;
         this.Inventory_Quantity = Inventory_Quantity;
     }
+    
+    private boolean isValid_ISBN(String ISBN){
+        String regex_ISBN = "\\d-\\d{4}-\\d{4}-\\d";
+        if (!ISBN.matches(regex_ISBN)) {
+            System.out.println("ISBN is not in the correct format.");
+            return false;
+        }
+        return true;
+    }
 
-    public void insert(Connection conn) throws SQLException {
+    private boolean isValid_Title(String Title){
+        if (Title.isEmpty() || Title.length()>100 || Title.contains("%") || Title.contains("_")){
+            System.out.println("Title is not in the correct format.");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValid_Authors(String[] Authors){
+        if (Authors.length == 0) {
+            System.out.println("Authors is not in the correct format.");
+            return false;
+        }
+        for (String author : Authors) {
+            if (author.isEmpty() || author.length()>50 || author.contains(",")){
+                System.out.println("Authors is not in the correct format.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isValid_Price(int Price){
+        if (Price < 0) {
+            System.out.println("Price is not in the correct format.");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValid_Inventory_Quantity(int Inventory_Quantity){
+        if (Inventory_Quantity < 0){
+            System.out.println("Inventory Quantity is not in the correct format.");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean insert(Connection conn) throws SQLException {
+        boolean isInputValid=true;
+        ISBN = ISBN.trim();
+        Title = Title.trim();
+        for (int i=0; i<Authors.length; i++) {
+            Authors[i]=Authors[i].trim();
+        }
+        Authors = Arrays.stream(Authors).filter(str -> !str.isEmpty() && !str.contains(",")).toArray(String[]::new);
+        if (!isValid_ISBN(ISBN) || !isValid_Title(Title) || !isValid_Authors(Authors) || !isValid_Price(Price) || !isValid_Inventory_Quantity(Inventory_Quantity)){
+            return false;
+        }
+        
         try {
             PreparedStatement pstmt_insert_book = conn.prepareStatement("INSERT INTO book values(?,?,?,?)");
             pstmt_insert_book.setString(1, ISBN);
@@ -33,7 +92,6 @@ public class Book {
         } catch (SQLException e) {
             System.out.println(e+"in book insertion");
         }
-        
         PreparedStatement pstmt_insert_author = conn.prepareStatement("INSERT INTO author values(?)");
         PreparedStatement pstmt_insert_write = conn.prepareStatement("INSERT INTO write_ values(?,?)");
         for (String author : Authors) {
@@ -41,8 +99,8 @@ public class Book {
             try {
                 pstmt_insert_author.setString(1, author);
                 pstmt_insert_author.executeUpdate();
-            } catch (SQLException e) {
-                //System.out.println(e); // should be commented out at the end // don't know how to implement "insert if not exist" so I just throw away the error if it happened
+            } catch (SQLException e) {  // don't know how to implement "insert if not exist" so I just throw away the error if it happened
+                //System.out.println(e); // for debugging: should be commented out at the end (it is normal to have this error)
             }
             // insert to write
             try {
@@ -56,8 +114,9 @@ public class Book {
         }
         pstmt_insert_author.close();
         pstmt_insert_write.close();
+        return isInputValid;
     }
-
+    
     public int size(Connection conn) throws SQLException{
         int size=-1;
         try {
