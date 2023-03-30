@@ -3,6 +3,7 @@ package dbaction.model;
 import java.sql.*;
 
 public class Order {
+    enum Status { ordered, shipped, received };
     private String OID;
     private String CID;
     private Date Order_Date;
@@ -55,6 +56,20 @@ public class Order {
             System.out.println(e+"in purchaser insertion");
         }
     }
+
+    public int size(Connection conn) throws SQLException{
+        int size=-1;
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs =  stmt.executeQuery("SELECT COUNT(*) FROM order_");
+            rs.next();
+            size = rs.getInt(1);
+        } catch (SQLException e) {
+            System.out.println(e+"\nin order size");
+        }
+        return size;
+    }
+
     public void update_shipping_status(Connection conn,String OID,String Shipping_Status) throws SQLException{
         // update shipping status
         try {

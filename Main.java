@@ -32,7 +32,12 @@ public class Main {
 
         int action;
         do {
-          bs.StartingMenu();
+          try {
+            bs.StartingMenu();
+          } catch (SQLException e) {
+            System.out.println(e);
+          }
+          
           // Scanner _sscan = new Scanner(System.in);
           action = dbinput.PrintScan(1, 4, scan);
           bs.OperationCall(action, scan);
