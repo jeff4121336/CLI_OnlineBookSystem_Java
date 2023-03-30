@@ -89,7 +89,7 @@ public class BookSystem{
 
     private void Operation_3_Menu(Scanner s) {
         System.out.println("\n==== BookStore Operation - Please choose from the following operation =====");
-        System.out.println("\n> 1. sf\n> 2. f\n> 3. x"); 
+        System.out.println("\n> 1. Order Update\n> 2. Order Query\n> 3. N Most Popular Books"); 
         
         /* Modify the parameters in printscan if u need 
          * PLEASE DONT CHANGE THE SCANNER, Use the one pass into function, i.e. s
@@ -101,7 +101,7 @@ public class BookSystem{
         // Add more if u need 
         switch (a) {
             case 1:
-                // ur func
+                db.Order_update(s);
                 break;
             case 2:
                 // ur func

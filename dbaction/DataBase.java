@@ -161,5 +161,13 @@ public class DataBase {
       * 4. N Most Popilar Books
       */
     }   
+    public void Order_update(Scanner s) {
+      System.out.println("Please enter the order ID that you would like to update the shipping status: ");
+      String order_id = s.nextLine().toLowerCase();
+    
+      System.out.println("Enter the new status for the order (ordered, shipped, received): ");
+      String order_state = s.nextLine().toLowerCase();
+      System.out.println(order_id + " " + order_state);
+    }   
   }
   
