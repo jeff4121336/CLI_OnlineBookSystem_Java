@@ -38,22 +38,20 @@ public class BookSystem{
                 }catch(SQLException e){
                     System.out.println(e);
                 }
-                System.out.println("Press enter to continue");
-                s.nextLine();
                 break;
             case 2:
                 Operation_2_Menu(s);
-                System.out.println("Press enter to continue");
-                s.nextLine();
                 break;
             case 3:
                 Operation_3_Menu(s);
-                System.out.println("Press enter to continue");
-                s.nextLine();
                 break;
             case 4:
                 Operation_4_Menu(s);
                 break;
+        }
+        if (i>0 && i<4){
+            System.out.println("Press enter to continue");
+            s.nextLine();
         }
     }
 
