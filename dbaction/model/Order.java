@@ -66,17 +66,27 @@ public class Order {
             ResultSet rs = check.executeQuery();
     
             if (rs.next()) {
-                System.out.println(rs.getString("SHIPPING_STATUS"));
+                String Original_status= rs.getString("SHIPPING_STATUS");
+                if ((Original_status.equals("ordered") && Shipping_Status.equals("received")
+                    || (Original_status.equals("ordered") && Shipping_Status.equals("shipped"))
+                    || (Original_status.equals("shipped") && Shipping_Status.equals("received")))) {
+                    PreparedStatement pstmt = conn.prepareStatement("UPDATE ORDER_ SET Shipping_Status = ? WHERE OID = ?");
+                    pstmt.setString(1, Shipping_Status);
+                    pstmt.setString(2, OID);
+                    pstmt.executeUpdate();
+                    pstmt.close();
+                    System.out.println("SUCCESS: Shipping status of: "+OID+" is updated from "+ Original_status+ " to " +Shipping_Status);
+                }else{            
+                    System.out.println("ERROR: Cannot change "+ Original_status +" to "+ Shipping_Status);
+                    return;
+                }
             } else {
-                System.out.println("ERROR: No such order. No update is done");
+                System.out.println("ERROR: No update is done");
                 return;
             }
 
-            PreparedStatement pstmt = conn.prepareStatement("UPDATE ORDER_ SET Shipping_Status = ? WHERE OID = ?");
-            pstmt.setString(1, Shipping_Status);
-            pstmt.setString(2, OID);
-            pstmt.executeUpdate();
-            pstmt.close();
+
+
             
         } catch (SQLException e) {
             System.out.println(e+"in order insertion");
