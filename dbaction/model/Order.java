@@ -73,11 +73,36 @@ public class Order {
     public void update_shipping_status(Connection conn,String OID,String Shipping_Status) throws SQLException{
         // update shipping status
         try {
-            PreparedStatement pstmt = conn.prepareStatement("UPDATE ORDER_ SET Shipping_Status = ? WHERE OID = ?");
-            pstmt.setString(1, Shipping_Status);
-            pstmt.setString(2, OID);
-            pstmt.executeUpdate();
-            pstmt.close();
+
+            PreparedStatement check = conn.prepareStatement(
+            "SELECT * FROM ORDER_ Where OID = ?"
+            );
+            check.setString(1, OID);
+            ResultSet rs = check.executeQuery();
+    
+            if (rs.next()) {
+                String Original_status= rs.getString("SHIPPING_STATUS");
+                if ((Original_status.equals("ordered") && Shipping_Status.equals("received")
+                    || (Original_status.equals("ordered") && Shipping_Status.equals("shipped"))
+                    || (Original_status.equals("shipped") && Shipping_Status.equals("received")))) {
+                    PreparedStatement pstmt = conn.prepareStatement("UPDATE ORDER_ SET Shipping_Status = ? WHERE OID = ?");
+                    pstmt.setString(1, Shipping_Status);
+                    pstmt.setString(2, OID);
+                    pstmt.executeUpdate();
+                    pstmt.close();
+                    System.out.println("SUCCESS: Shipping status of: "+OID+" is updated from "+ Original_status+ " to " +Shipping_Status);
+                }else{            
+                    System.out.println("ERROR: Cannot change "+ Original_status +" to "+ Shipping_Status);
+                    return;
+                }
+            } else {
+                System.out.println("ERROR: No update is done");
+                return;
+            }
+
+
+
+            
         } catch (SQLException e) {
             System.out.println(e+"in order insertion");
         }

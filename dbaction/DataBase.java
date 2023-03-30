@@ -162,8 +162,11 @@ public class DataBase {
       */
     }   
     public void Order_update(Scanner s) {
-      System.out.println("Please enter the order ID that you would like to update the shipping status: ");
-      String order_id = s.nextLine().toLowerCase();
+      String order_id;
+      do {
+          System.out.println("Please enter the order ID that you would like to update the shipping status: (in the form XXXXXXXX)");
+          order_id = s.nextLine().toLowerCase();
+      } while (order_id.length() != 8);
       String order_state;
       do {
           System.out.println("Enter the new status for the order (ordered, shipped, received): ");
