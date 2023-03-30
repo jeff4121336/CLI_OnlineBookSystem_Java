@@ -102,21 +102,4 @@ public class Order {
         }
 
     }
-    public void order_query(Connection conn) throws SQLException{
-        // update shipping status
-        try {
-            PreparedStatement check = conn.prepareStatement(
-            "SELECT * FROM ORDER_ Where OID = ?"
-            );
-            check.setString(1, OID);
-            ResultSet rs = check.executeQuery();
-            while (rs.next()) {
-
-            } 
-            
-        } catch (SQLException e) {
-            System.out.println(e+"in order order query");
-        }
-
-    }
 }

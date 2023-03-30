@@ -196,5 +196,24 @@ public class DataBase {
       Order order = new Order();
       return order.size(conn);
     }
+    public void Order_query() {
+      try {    
+        String[] statusValues = {"ordered", "shipped", "received"};
+
+        for (String status : statusValues) {
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ORDER_ WHERE Shipping_Status=? ORDER BY OID");
+            pstmt.setString(1, status);
+            ResultSet rs = pstmt.executeQuery();
+            System.out.println("\nThe following orders are in the " + status + " status:");
+            while (rs.next()) {
+                System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getDate("Order_Date") + " Shipping Status: " + rs.getString("Shipping_Status"));
+            }
+            rs.close();
+            pstmt.close();
+        }
+    } catch (SQLException e) {
+        System.out.println("An error occurred: " + e);
+    }    
+    }   
   }
   

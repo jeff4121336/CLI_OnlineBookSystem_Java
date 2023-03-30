@@ -109,7 +109,7 @@ public class BookSystem{
                 db.Order_update(s);
                 break;
             case 2:
-                db.Order_query(s);
+                db.Order_query();
                 break;
             case 3:
                 // ur func
