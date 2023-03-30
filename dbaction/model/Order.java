@@ -58,11 +58,26 @@ public class Order {
     public void update_shipping_status(Connection conn,String OID,String Shipping_Status) throws SQLException{
         // update shipping status
         try {
+
+            PreparedStatement check = conn.prepareStatement(
+            "SELECT * FROM ORDER_ Where OID = ?"
+            );
+            check.setString(1, OID);
+            ResultSet rs = check.executeQuery();
+    
+            if (rs.next()) {
+                System.out.println(rs.getString("SHIPPING_STATUS"));
+            } else {
+                System.out.println("ERROR: No such order. No update is done");
+                return;
+            }
+
             PreparedStatement pstmt = conn.prepareStatement("UPDATE ORDER_ SET Shipping_Status = ? WHERE OID = ?");
             pstmt.setString(1, Shipping_Status);
             pstmt.setString(2, OID);
             pstmt.executeUpdate();
             pstmt.close();
+            
         } catch (SQLException e) {
             System.out.println(e+"in order insertion");
         }
