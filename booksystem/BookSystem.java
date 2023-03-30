@@ -21,11 +21,18 @@ public class BookSystem{
     }
 
 
-    public void StartingMenu() {
+    public void StartingMenu() throws SQLException {
+        int bookSize=-1;
+        int customerSize=-1;
+        int orderSize=-1;
+        bookSize = db.bookSize();
+        customerSize = db.customerSize();
+        orderSize = db.orderSize();
+        
         dbtime._dbtime();
         System.out.println("\n===== Welcome to Book Ordering Management System =====");
         System.out.println("===== Version 1.0 Last Updated: 27/02/2023 =====");
-        System.out.println("===== Data Base Record: xxxx yyyy zzzzz !!!!!=====\n");
+        System.out.println("===== Data Base Record: book("+ bookSize +") customer("+ customerSize+") order("+ orderSize +")=====\n");
         System.out.println("> 1. Database Initialization\n> 2. Customer Operation\n> 3. Bookstore Operation\n> 4. Quit\n");
         System.out.println("Please Enter Your Action:");   
     }
@@ -50,7 +57,7 @@ public class BookSystem{
                 break;
         }
         if (i>0 && i<4){
-            System.out.println("Press enter to continue");
+            System.out.println("Press enter to return to main menu");
             s.nextLine();
         }
     }

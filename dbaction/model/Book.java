@@ -9,7 +9,9 @@ public class Book {
     private int Price;
     private int Inventory_Quantity;
 
-    
+    public Book(){
+        
+    }
 
     public Book(String ISBN, String Title, String[] Authors, int Price, int Inventory_Quantity){
         this.ISBN = ISBN;
@@ -40,7 +42,7 @@ public class Book {
                 pstmt_insert_author.setString(1, author);
                 pstmt_insert_author.executeUpdate();
             } catch (SQLException e) {
-                //System.out.println(e); // don't know how to implement "insert if not exist"
+                //System.out.println(e); // should be commented out at the end // don't know how to implement "insert if not exist" so I just throw away the error if it happened
             }
             // insert to write
             try {
@@ -54,5 +56,18 @@ public class Book {
         }
         pstmt_insert_author.close();
         pstmt_insert_write.close();
+    }
+
+    public int size(Connection conn) throws SQLException{
+        int size=-1;
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs =  stmt.executeQuery("SELECT COUNT(*) FROM book");
+            rs.next();
+            size = rs.getInt(1);
+        } catch (SQLException e) {
+            System.out.println(e+"\nin book size");
+        }
+        return size;
     }
 }

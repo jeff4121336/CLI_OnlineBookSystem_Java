@@ -43,7 +43,7 @@ public class DataBase {
         try {
           stmt.execute(query);
         } catch (SQLException e) {
-          System.out.println(e+query); // for debugging: can be deleted later
+          System.out.println(e+query); // should be commented out at the end // don't know how to implement "drop if table exist" so I just throw away the error if it happened
         }
       }
       stmt.close();
@@ -121,10 +121,10 @@ public class DataBase {
       * 4. Error reporting during INSERT or File Data Type
       * 5. Delete or Reconstruct after each call of the system
       */
+      System.out.println("initializing...");
       DropAllTables();
       CreateAllTables();
       DataInit();
-      
       System.out.println("initialization succeeded");
     }
     /* Function 2 - Customer Oper */
@@ -177,5 +177,21 @@ public class DataBase {
         System.out.println("An error occurred: "+e);
       }
     }   
+
+    /* Fuction 4 */
+    public int bookSize() throws SQLException{
+      Book book = new Book();
+      return book.size(conn);
+    }
+
+    public int customerSize() throws SQLException{
+      Customer customer = new Customer();
+      return customer.size(conn);
+    }
+
+    public int orderSize() throws SQLException{
+      Order order = new Order();
+      return order.size(conn);
+    }
   }
   
