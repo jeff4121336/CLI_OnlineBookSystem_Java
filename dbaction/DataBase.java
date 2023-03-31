@@ -265,7 +265,7 @@ public class DataBase {
         int totalOrderQuantity = rs.getInt("total_order_quantity");
         String authorNames = rs.getString("author_names");
     
-        String output = totalOrderQuantity+ " | "+ isbn + " | " + title + " | " + price + " | " + authorNames;
+        String output = "Quantity being ordered: " + totalOrderQuantity+ " | ISBN: "+ isbn + " | Title: " + title + " | Price: $" + price + " | Author(s): " + authorNames;
         System.out.println(output);
       }
       if (count<number) {
