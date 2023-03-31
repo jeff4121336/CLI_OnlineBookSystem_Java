@@ -219,23 +219,16 @@ public class DataBase {
   public void N_most_popular_book(Scanner s) {
     try {    
       int number = 0;
-
-      boolean isPositive = false;
-      
-      while (!isPositive) {
-          System.out.print("Enter a positive integer: ");
-          if (s.hasNextInt()) {
-              number = s.nextInt();
-              if (number > 0) {
-                  isPositive = true;
-              } else {
-                  System.out.println("Error: Please enter a positive integer.");
-              }
-          } else {
-              System.out.println("Error: Please enter a positive integer.");
-              s.next();
-          }
-      }
+      do {
+        System.out.print("Enter a positive integer: ");
+        while (!s.hasNextInt()) {
+          System.out.println("That's not a valid integer. Try again.");
+          s.next();
+        }
+        number = s.nextInt();
+        s.nextLine(); // consume the newline character
+      } while (number <= 0);
+    
       String sql = 
       "SELECT b.isbn, b.title, b.price, total.total_order_quantity, authors.author_names " +
       "FROM book b " +
