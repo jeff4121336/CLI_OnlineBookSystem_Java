@@ -122,18 +122,35 @@ public class DataBase {
       System.out.println("initialization finished");
     }
 
-   /* Function 2 - Customer Oper */
 
-  public void Book_Orderplace() {
+  public void Book_Orderplace(Scanner s) {
+    String _uid; 
     System.out.println("Placing Order!");
-    //PreparedStatement cstmt = conn.prepareStatement("");
-    //cstmt.setString();
-    //cstmt.setString();
-    //...
-    //ResultSet a = cstmt.executeQuery();
+    System.out.println("Please enter your UID to the history order"); //edit
+    _uid = s.nextLine();
+    try {
+      PreparedStatement ostmt = conn.prepareStatement("SELECT * From Order_ Where UID = ?");
+      ostmt.setString(1, _uid);
+      ResultSet rs = ostmt.executeQuery();
+      
+      /* Print result here */
+      if (rs == null) 
+          System.out.println("No order for user with uid: " + _uid);
+      else {
+          while (rs.next()) {
+              System.out.println("fd");
+          }
+      }
+
+  } catch (Exception e) {
+      System.out.println("ERROR: " + e);
   }
-  public void Order_HistoryCheck() {
-    System.out.println("CheckHistoryOrder");
+
+  return;
+  }
+  public void OrderHistory_Check() {
+    System.out.println("Check History Order by UID...");
+
     //PreparedStatement cstmt = conn.prepareStatement("");
     //cstmt.setString();
     //cstmt.setString();
@@ -238,7 +255,7 @@ public class DataBase {
             }else{
                 while (rs.next()) {
                   System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getDate("Order_Date") + " Shipping Status: " + rs.getString("Shipping_Status"));
-              }
+                }
             }
             rs.close();
             pstmt.close();

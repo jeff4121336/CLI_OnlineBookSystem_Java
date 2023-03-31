@@ -151,16 +151,16 @@ public class Book {
                     System.out.println("No result: Book does not exists");
                     return;
                 }
+             
             
             if (rs == null) 
                 System.out.println("No result: Book does not exists");
             else { 
                 while (rs.next()) {
-                    System.out.print("Result: ");
-                    for (int i = 1; i <= 4; i++) {
-                        System.out.print(rs.getString(i) + " ");
-                        if (i == 4) System.out.println("");
-                    }
+                    System.out.print("Result: \n");
+                    System.out.println("ISBN: " + rs.getString(1) + "\nTitle: " + rs.getString(2) 
+                    + "\nAuthor: " + Arrays.toString(b.Authors) + "\nPrice: " + rs.getString(3) 
+                    + "\nQuantity: " + rs.getString(4));
                 }
             }
         } catch (SQLException e) {
