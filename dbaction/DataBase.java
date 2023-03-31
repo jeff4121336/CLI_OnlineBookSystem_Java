@@ -214,6 +214,67 @@ public class DataBase {
     } catch (SQLException e) {
         System.out.println("An error occurred: " + e);
     }    
-    }   
+    }
+
+  public void N_most_popular_book(Scanner s) {
+    try {    
+      int number = 0;
+
+      boolean isPositive = false;
+      
+      while (!isPositive) {
+          System.out.print("Enter a positive integer: ");
+          if (s.hasNextInt()) {
+              number = s.nextInt();
+              if (number > 0) {
+                  isPositive = true;
+              } else {
+                  System.out.println("Error: Please enter a positive integer.");
+              }
+          } else {
+              System.out.println("Error: Please enter a positive integer.");
+              s.next();
+          }
+      }
+      String sql = 
+      "SELECT b.isbn, b.title, b.price, total.total_order_quantity, authors.author_names " +
+      "FROM book b " +
+      "JOIN ( " +
+      "    SELECT w.isbn, LISTAGG(w.name, ', ') WITHIN GROUP (ORDER BY w.name) as author_names " +
+      "    FROM write_ w " +
+      "    GROUP BY w.isbn " +
+      ") authors ON b.isbn = authors.isbn " +
+      "JOIN ( " +
+      "    SELECT p.isbn, SUM(p.order_quantity) as total_order_quantity " +
+      "    FROM product p " +
+      "    GROUP BY p.isbn " +
+      "    ORDER BY total_order_quantity DESC " +
+      "    FETCH FIRST ? ROWS ONLY " +
+      ") total ON b.isbn = total.isbn " +
+      "ORDER BY total_order_quantity DESC";
+
+
+      PreparedStatement pstmt = conn.prepareStatement(sql);
+      pstmt.setInt(1, number);
+      ResultSet rs = pstmt.executeQuery();
+      System.out.println("\nThe " + number + " most popular books are:");
+      while (rs.next()) {
+        String isbn = rs.getString("isbn");
+        String title = rs.getString("title");
+        double price = rs.getDouble("price");
+        int totalOrderQuantity = rs.getInt("total_order_quantity");
+        String authorNames = rs.getString("author_names");
+    
+        String output = totalOrderQuantity+ " | "+ isbn + " | " + title + " | " + price + " | " + authorNames;
+        System.out.println(output);
+      }
+      System.out.println();
+      rs.close();
+      pstmt.close();
+      
+  } catch (SQLException e) {
+      System.out.println("An error occurred: " + e);
+  }    
+  }      
   }
   

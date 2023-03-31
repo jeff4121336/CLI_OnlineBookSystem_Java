@@ -112,7 +112,7 @@ public class BookSystem{
                 db.Order_query();
                 break;
             case 3:
-                // ur func
+                db.N_most_popular_book(s);
                 break;
         }
     }
