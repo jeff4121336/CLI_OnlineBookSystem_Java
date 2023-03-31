@@ -129,4 +129,43 @@ public class Book {
         }
         return size;
     }
+
+    public void search(Connection conn, Book b) throws SQLException{
+        boolean inputerror = true;
+        try {
+            inputerror = isValid_ISBN(b.ISBN) && isValid_Title(b.Title) && isValid_Authors(b.Authors);
+            if (!inputerror) 
+                System.out.println("No result: invaild input");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM book where ISBN = ? AND Title = ?");
+            stmt.setString(1, b.ISBN);
+            stmt.setString(2, b.Title);
+            ResultSet rs =  stmt.executeQuery();
+
+            /* For checking authors */
+            PreparedStatement tempstmt = conn.prepareStatement("SELECT Name FROM write_ where ISBN = ?");
+            tempstmt.setString(1, b.ISBN);
+            ResultSet temprs = tempstmt.executeQuery();
+
+            while (temprs.next()) 
+                if (!Arrays.asList(Authors).contains(temprs.getString(1))) {
+                    System.out.println("No result: Book does not exists");
+                    return;
+                }
+            
+            if (rs == null) 
+                System.out.println("No result: Book does not exists");
+            else { 
+                while (rs.next()) {
+                    System.out.print("Result: ");
+                    for (int i = 1; i <= 4; i++) {
+                        System.out.print(rs.getString(i) + " ");
+                        if (i == 4) System.out.println("");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR: " + e);
+        }
+        return;
+    }
 }

@@ -80,8 +80,8 @@ public class BookSystem{
         
         switch (a) {
             case 1:
-                System.out.println("hi 1");
-                //DataBase.BookSearching();
+                db.Book_Search(s);
+
                 break;
             case 2:
                 System.out.println("hi 2");
@@ -123,4 +123,3 @@ public class BookSystem{
     }
 
 }
-

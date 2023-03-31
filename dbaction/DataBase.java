@@ -115,59 +115,86 @@ public class DataBase {
     }
     /* Function 1 - Database Init */
     public void DataBaseInit() throws SQLException {
-      /* 1. File Read io
-      * 2. DataBase Connect and Init
-      * 3. INSERT
-      * 4. Error reporting during INSERT or File Data Type
-      * 5. Delete or Reconstruct after each call of the system
-      */
       System.out.println("initializing...");
       DropAllTables();
       CreateAllTables();
       DataInit();
       System.out.println("initialization finished");
     }
-    /* Function 2 - Customer Oper */
-    public void BookSearching() {
-      System.out.println("Book Seraching!");
-      //PreparedStatement cstmt = conn.prepareStatement("");
-      //cstmt.setString();
-      //cstmt.setString();
-      //...
-      //ResultSet a = cstmt.executeQuery();
-      
+
+   /* Function 2 - Customer Oper */
+
+  public void Book_Orderplace() {
+    System.out.println("Placing Order!");
+    //PreparedStatement cstmt = conn.prepareStatement("");
+    //cstmt.setString();
+    //cstmt.setString();
+    //...
+    //ResultSet a = cstmt.executeQuery();
+  }
+  public void Order_HistoryCheck() {
+    System.out.println("CheckHistoryOrder");
+    //PreparedStatement cstmt = conn.prepareStatement("");
+    //cstmt.setString();
+    //cstmt.setString();
+    //...
+    //ResultSet a = cstmt.executeQuery();
+  }
+
+  // public void Show_booklist() { function 4
+  //   PreparedStatement cstmt;
+  //   try {
+  //     cstmt = conn.prepareStatement("SELECT * FROM write_, book WHERE book.ISBN = write_.ISBN"); /* the merged table and */
+  //     ResultSet rs = cstmt.executeQuery();
+  //     if (rs == null) {
+  //       System.out.println("No books in database.");
+  //       return;
+  //     } else {
+  //       while (rs.next()) {
+  //         for (int i = 1; i <= 5; i++) {
+  //           String columnValue = rs.getString(i);
+  //           System.out.print(columnValue + " ");
+  //         }
+  //         System.out.println("\n");
+  //       }
+  //     }
+  //   } catch (Exception e) {
+  //     System.out.println("An error occurred: " + e);
+  //   }
+  // }
+
+  public void Book_Search(Scanner s) {
+    Book _book;
+    String _isbn, _title, authors;
+    String[] _authors = null;
+    
+    System.out.println("Book Searching..."); 
+
+    System.out.println("Please enter the ISBN that you like to search: (in the form X-XXXX-XXXX-X)"); //edit
+    _isbn = s.nextLine();
+    System.out.println("Please enter the BookTitle that you like to search:"); 
+    _title = s.nextLine();
+    System.out.println("Please enter the ISBN that you like to search: (in the form [Author Name 1], [Author Name 2] ...)"); 
+    authors = s.nextLine();
+    _authors = authors.split("[,]");
+    for (int i = 0; i < _authors.length; i++) 
+      _authors[i] = _authors[i].strip();
+
+    try {
+      _book = new Book(_isbn, _title, _authors, 0,  0); /* price and quant not important */
+      _book.search(conn ,_book);
+    } catch (Exception e) {
+      System.out.println("An error occurred: " + e);
     }
-    public void PlacingOrder() {
-      System.out.println("Placing Order!");
-      //PreparedStatement cstmt = conn.prepareStatement("");
-      //cstmt.setString();
-      //cstmt.setString();
-      //...
-      //ResultSet a = cstmt.executeQuery();
-    }
-    public void CheckHistoryOrder() {
-      System.out.println("CheckHistoryOrder");
-      //PreparedStatement cstmt = conn.prepareStatement("");
-      //cstmt.setString();
-      //cstmt.setString();
-      //...
-      //ResultSet a = cstmt.executeQuery();
-    }
-    /* Fuction 3 - Bookstore Oper */
-    public void BookStoreOper() {
-      /* 1. DataBase Connect and read (also the history of order)     
-      * 2. Order update
-      * 3. Order Query
-      * 4. N Most Popilar Books
-      */
-    }   
+  }
+
+
     public void Order_update(Scanner s) {
       String order_id;
       do {
-        System.out.println("Please enter the order ID that you would like to update the shipping status: ");
-        order_id = s.nextLine().toLowerCase();
-      } while (!order_id.matches("\\d{1,8}") || order_id.length() > 8);
-    
+          System.out.println("Please enter the order ID that you would like to update the shipping status: ");
+          order_id = s.nextLine().toLowerCase();
+      } while (!order_id.matches("\\d{1,8}"));
       String order_state;
       do {
           System.out.println("Enter the new status for the order (ordered, shipped, received): ");
@@ -213,7 +240,6 @@ public class DataBase {
                   System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getDate("Order_Date") + " Shipping Status: " + rs.getString("Shipping_Status"));
               }
             }
-
             rs.close();
             pstmt.close();
         }
