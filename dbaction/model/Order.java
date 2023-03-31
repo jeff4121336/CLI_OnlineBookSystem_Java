@@ -23,7 +23,7 @@ public class Order {
     }
 
     private boolean isValid_OID(String OID){
-        String regex_OID = "\\d{8}";
+        String regex_OID = "\\d{1,8}";
         if (OID.isEmpty() || !OID.matches(regex_OID)){
             System.out.println("OID is not in the correct format.");
             return false;
@@ -124,11 +124,13 @@ public class Order {
     }
 
     public void update_shipping_status(Connection conn,String OID,String Shipping_Status) throws SQLException{
+        OID = OID.trim();
+        Shipping_Status = Shipping_Status.trim();
         // update shipping status
         try {
-            PreparedStatement isValid = conn.prepareStatement("SELECT * FROM ORDER_ Where OID = ?");
-            isValid.setString(1, OID);
-            ResultSet rs = isValid.executeQuery();
+            PreparedStatement pstmt_select = conn.prepareStatement("SELECT * FROM ORDER_ Where OID = ?");
+            pstmt_select.setString(1, OID);
+            ResultSet rs = pstmt_select.executeQuery();
     
             if (rs.next()) {
                 String Original_status= rs.getString("SHIPPING_STATUS");
@@ -151,7 +153,7 @@ public class Order {
             }
             
         } catch (SQLException e) {
-            System.out.println(e+"in order insertion");
+            System.out.println(e+"in update_shipping_status");
         }
 
     }

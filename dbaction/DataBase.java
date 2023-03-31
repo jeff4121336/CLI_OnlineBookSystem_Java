@@ -164,9 +164,9 @@ public class DataBase {
     public void Order_update(Scanner s) {
       String order_id;
       do {
-          System.out.println("Please enter the order ID that you would like to update the shipping status: (in the form XXXXXXXX)");
+          System.out.println("Please enter the order ID that you would like to update the shipping status: ");
           order_id = s.nextLine().toLowerCase();
-      } while (!order_id.matches("[0-9]{8}"));
+      } while (!order_id.matches("\\d{1,8}"));
       String order_state;
       do {
           System.out.println("Enter the new status for the order (ordered, shipped, received): ");
