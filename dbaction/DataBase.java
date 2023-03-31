@@ -205,9 +205,14 @@ public class DataBase {
             pstmt.setString(1, status);
             ResultSet rs = pstmt.executeQuery();
             System.out.println("\nThe following orders are in the " + status + " status:");
-            while (rs.next()) {
-                System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getDate("Order_Date") + " Shipping Status: " + rs.getString("Shipping_Status"));
+            if (rs==null) {
+                System.out.println("No orders in the " + status + " status.");
+            }else{
+                while (rs.next()) {
+                  System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getDate("Order_Date") + " Shipping Status: " + rs.getString("Shipping_Status"));
+              }
             }
+
             rs.close();
             pstmt.close();
         }
@@ -251,15 +256,20 @@ public class DataBase {
       pstmt.setInt(1, number);
       ResultSet rs = pstmt.executeQuery();
       System.out.println("\nThe " + number + " most popular books are:");
+      int count=0;
       while (rs.next()) {
+        count++;
         String isbn = rs.getString("isbn");
         String title = rs.getString("title");
-        double price = rs.getDouble("price");
+        int price = rs.getInt("price");
         int totalOrderQuantity = rs.getInt("total_order_quantity");
         String authorNames = rs.getString("author_names");
     
         String output = totalOrderQuantity+ " | "+ isbn + " | " + title + " | " + price + " | " + authorNames;
         System.out.println(output);
+      }
+      if (count<number) {
+        System.out.println("There is only " + count + " books being ordered. Therefore only " + count + " books are shown.");
       }
       System.out.println();
       rs.close();
