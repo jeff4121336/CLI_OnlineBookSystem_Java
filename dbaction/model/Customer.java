@@ -3,21 +3,8 @@ package dbaction.model;
 import java.sql.*;
 
 public class Customer {
-    private String UID;
-    private String Name;
-    private String Address;
 
-    public Customer(){
-        
-    }
-
-    public Customer(String UID, String Name, String Address){
-        this.UID = UID;
-        this.Name = Name;
-        this.Address = Address;
-    }
-
-    private boolean isValid_UID(String UID){
+    public static boolean isValid_UID(String UID){
         if (UID.isEmpty() || UID.length()>10){
             System.out.println("UID is not in the correct format.");
             return false;
@@ -25,7 +12,7 @@ public class Customer {
         return true;
     }
 
-    private boolean isValid_Name(String Name){
+    public static boolean isValid_Name(String Name){
         if (Name.isEmpty() || Name.length()>50){
             System.out.println("Name is not in the correct format.");
             return false;
@@ -33,7 +20,7 @@ public class Customer {
         return true;
     }
 
-    private boolean isValid_Address(String Address){
+    public static boolean isValid_Address(String Address){
         if (Address.isEmpty() || Address.length()>200){
             System.out.println("Address is not in the correct format.");
             return false;
@@ -41,7 +28,7 @@ public class Customer {
         return true;
     }
 
-    public boolean insert(Connection conn) throws SQLException{
+    public static boolean insert(Connection conn, String UID, String Name, String Address) throws SQLException{
         boolean isInputValid = true;
         UID = UID.trim();
         Name = Name.trim();
@@ -60,7 +47,7 @@ public class Customer {
         return isInputValid;
     }
 
-    public int size(Connection conn) throws SQLException{
+    public static int size(Connection conn) throws SQLException{
         int size=-1;
         try {
             Statement stmt = conn.createStatement();

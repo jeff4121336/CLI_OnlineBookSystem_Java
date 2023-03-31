@@ -3,26 +3,8 @@ package dbaction.model;
 import java.sql.*;
 
 public class Order {
-    enum Status { ordered, shipped, received };
-    private String OID;
-    private String UID;
-    private Date Order_Date;
-    private String ISBN;
-    private int Order_Quantity;
-    private String Shipping_Status;
-    
-    public Order(){
-    }
-    public Order(String OID, String UID, Date Order_Date, String ISBN, int Order_Quantity, String Shipping_Status){
-        this.OID = OID;
-        this.UID = UID;
-        this.Order_Date = Order_Date;
-        this.ISBN = ISBN;
-        this.Order_Quantity = Order_Quantity;
-        this.Shipping_Status = Shipping_Status;
-    }
 
-    private boolean isValid_OID(String OID){
+    public static boolean isValid_OID(String OID){
         String regex_OID = "\\d{1,8}";
         if (OID.isEmpty() || !OID.matches(regex_OID)){
             System.out.println("OID is not in the correct format.");
@@ -31,24 +13,7 @@ public class Order {
         return true;
     }
 
-    private boolean isValid_UID(String UID){
-        if (UID.isEmpty() || UID.length()>10){
-            System.out.println("UID is not in the correct format.");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isValid_ISBN(String ISBN){
-        String regex_ISBN = "\\d-\\d{4}-\\d{4}-\\d";
-        if (!ISBN.matches(regex_ISBN)) {
-            System.out.println("ISBN is not in the correct format.");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isValid_Order_Quantity(int Order_Quantity){
+    public static boolean isValid_Order_Quantity(int Order_Quantity){
         if (Order_Quantity < 0){
             System.out.println("Order Quantity is not in the correct format.");
             return false;
@@ -56,7 +21,7 @@ public class Order {
         return true;
     }
 
-    private boolean isValid_Shipping_Status(String Shipping_Status){
+    public static boolean isValid_Shipping_Status(String Shipping_Status){
         if (!Shipping_Status.equals("ordered") && !Shipping_Status.equals("shipped") && !Shipping_Status.equals("received")){
             System.out.println("Shipping Status is not in the correct format.");
             return false;
@@ -64,14 +29,14 @@ public class Order {
         return true;
     }
 
-    public boolean insert(Connection conn) throws SQLException{
+    public static boolean insert(Connection conn, String OID, String UID, Date Order_Date, String ISBN, int Order_Quantity, String Shipping_Status) throws SQLException{
         boolean isInputValid = true;
         OID = OID.trim();
         UID = UID.trim();
         ISBN = ISBN.trim();
         Shipping_Status = Shipping_Status.trim().toLowerCase();
         
-        if (!isValid_OID(OID) || !isValid_UID(UID) || !isValid_ISBN(ISBN) || !isValid_Order_Quantity(Order_Quantity) || !isValid_Shipping_Status(Shipping_Status)){
+        if (!isValid_OID(OID) || ! Customer.isValid_UID(UID) || ! Book.isValid_ISBN(ISBN) || !isValid_Order_Quantity(Order_Quantity) || !isValid_Shipping_Status(Shipping_Status)){
             return false;
         }
         
@@ -110,7 +75,7 @@ public class Order {
         return isInputValid;
     }
 
-    public int size(Connection conn) throws SQLException{
+    public static int size(Connection conn) throws SQLException{
         int size=-1;
         try {
             Statement stmt = conn.createStatement();
@@ -123,7 +88,7 @@ public class Order {
         return size;
     }
 
-    public void update_shipping_status(Connection conn,String OID,String Shipping_Status) throws SQLException{
+    public static void update_shipping_status(Connection conn,String OID,String Shipping_Status) throws SQLException{
         OID = OID.trim();
         Shipping_Status = Shipping_Status.trim();
         // update shipping status

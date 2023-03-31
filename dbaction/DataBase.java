@@ -7,9 +7,9 @@ import dbaction.model.*;
 
 public class DataBase {
   
-  final String url = "jdbc:oracle:thin:@//db18.cse.cuhk.edu.hk:1521/oradb.cse.cuhk.edu.hk";
-  final String user = "h022";
-  final String password = "GackTels";
+  private final String url = "jdbc:oracle:thin:@//db18.cse.cuhk.edu.hk:1521/oradb.cse.cuhk.edu.hk";
+  private final String user = "h022";
+  private final String password = "GackTels";
   private Connection conn;
   
   final String[] tableName = {"purchaser", "product", "write_", "book", "customer", "order_", "author"};
@@ -18,17 +18,6 @@ public class DataBase {
     System.out.println("connecting...");
     DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
     this.conn = DriverManager.getConnection(url, user, password); //connect to JDBC
-    // //test for query
-    // System.out.println( "test for query:");
-    // Statement stmt = conn.createStatement();
-    // String query = "SELECT * FROM book";
-    // ResultSet rs = stmt.executeQuery( query );
-    // // loop through result tuples (rs is a cursor)
-    // while ( rs.next() ) {
-      // String s = rs.getString("ISBN");
-      // //Int n = rs.getInt('rating');
-      // System.out.println( s + ' ');
-      // }
     }
     
     public void close() throws SQLException{
@@ -76,8 +65,7 @@ public class DataBase {
         while (myReader.hasNextLine()) {
           String[] data = myReader.nextLine().split("\t");
           String[] authors = data[2].split(",");
-          Book book = new Book(data[0], data[1], authors, Integer.parseInt(data[3]), Integer.parseInt(data[4]));
-          book.insert(conn);
+          Book.insert(conn,data[0], data[1], authors, Integer.parseInt(data[3]), Integer.parseInt(data[4]));
         }
         myReader.close();
       } catch (FileNotFoundException e) {
@@ -90,8 +78,7 @@ public class DataBase {
         Scanner myReader = new Scanner(myObj);
         while (myReader.hasNextLine()) {
           String[] data = myReader.nextLine().split("\t");
-          Customer customer = new Customer(data[0], data[1],data[2]);
-          customer.insert(conn);
+          Customer.insert(conn, data[0], data[1], data[2]);
         }
         myReader.close();
       } catch (FileNotFoundException e) {
@@ -105,8 +92,7 @@ public class DataBase {
         while (myReader.hasNextLine()) {
           String[] data = myReader.nextLine().split("\t");
           Date date = Date.valueOf(data[2]);
-          Order order = new Order(data[0], data[1], date, data[3],Integer.parseInt(data[4]) ,data[5]);
-          order.insert(conn);
+          Order.insert(conn, data[0], data[1], date, data[3],Integer.parseInt(data[4]) ,data[5]);
         }
         myReader.close();
       } catch (FileNotFoundException e) {
@@ -181,7 +167,6 @@ public class DataBase {
   // }
 
   public void Book_Search(Scanner s) {
-    Book _book;
     String _isbn, _title, authors;
     String[] _authors = null;
     
@@ -198,8 +183,7 @@ public class DataBase {
       _authors[i] = _authors[i].strip();
 
     try {
-      _book = new Book(_isbn, _title, _authors, 0,  0); /* price and quant not important */
-      _book.search(conn ,_book);
+      Book.search(conn , _isbn, _title, _authors);
     } catch (Exception e) {
       System.out.println("An error occurred: " + e);
     }
@@ -219,27 +203,23 @@ public class DataBase {
       } while (!order_state.equals("ordered") && !order_state.equals("shipped") && !order_state.equals("received"));
       
       try {
-        Order order = new Order();
-        order.update_shipping_status(conn, order_id, order_state);
+        Order.update_shipping_status(conn, order_id, order_state);
       } catch (SQLException e) {
         System.out.println("An error occurred: "+e);
       }
     }   
 
     /* Fuction 4 */
-    public int bookSize() throws SQLException{
-      Book book = new Book();
-      return book.size(conn);
+    public int getBookSize() throws SQLException{
+      return Book.size(conn);
     }
 
-    public int customerSize() throws SQLException{
-      Customer customer = new Customer();
-      return customer.size(conn);
+    public int getCustomerSize() throws SQLException{
+      return Customer.size(conn);
     }
 
-    public int orderSize() throws SQLException{
-      Order order = new Order();
-      return order.size(conn);
+    public int getOrderSize() throws SQLException{
+      return Order.size(conn);
     }
     public void Order_query() {
       try {    

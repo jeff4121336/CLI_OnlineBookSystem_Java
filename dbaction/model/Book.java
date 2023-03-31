@@ -4,25 +4,8 @@ import java.sql.*;
 import java.util.Arrays;
 
 public class Book {
-    private String ISBN;
-    private String Title;
-    private String[] Authors;
-    private int Price;
-    private int Inventory_Quantity;
     
-    public Book(){
-        
-    }
-    
-    public Book(String ISBN, String Title, String[] Authors, int Price, int Inventory_Quantity){
-        this.ISBN = ISBN;
-        this.Title = Title;
-        this.Authors = Authors;
-        this.Price = Price;
-        this.Inventory_Quantity = Inventory_Quantity;
-    }
-    
-    private boolean isValid_ISBN(String ISBN){
+    public static boolean isValid_ISBN(String ISBN){
         String regex_ISBN = "\\d-\\d{4}-\\d{4}-\\d";
         if (!ISBN.matches(regex_ISBN)) {
             System.out.println("ISBN is not in the correct format.");
@@ -31,7 +14,7 @@ public class Book {
         return true;
     }
 
-    private boolean isValid_Title(String Title){
+    public static boolean isValid_Title(String Title){
         if (Title.isEmpty() || Title.length()>100 || Title.contains("%") || Title.contains("_")){
             System.out.println("Title is not in the correct format.");
             return false;
@@ -39,7 +22,7 @@ public class Book {
         return true;
     }
 
-    private boolean isValid_Authors(String[] Authors){
+    public static boolean isValid_Authors(String[] Authors){
         if (Authors.length == 0) {
             System.out.println("Authors is not in the correct format.");
             return false;
@@ -53,7 +36,7 @@ public class Book {
         return true;
     }
 
-    private boolean isValid_Price(int Price){
+    public static boolean isValid_Price(int Price){
         if (Price < 0) {
             System.out.println("Price is not in the correct format.");
             return false;
@@ -61,7 +44,7 @@ public class Book {
         return true;
     }
 
-    private boolean isValid_Inventory_Quantity(int Inventory_Quantity){
+    public static boolean isValid_Inventory_Quantity(int Inventory_Quantity){
         if (Inventory_Quantity < 0){
             System.out.println("Inventory Quantity is not in the correct format.");
             return false;
@@ -69,7 +52,7 @@ public class Book {
         return true;
     }
 
-    public boolean insert(Connection conn) throws SQLException {
+    public static boolean insert(Connection conn, String ISBN, String Title, String[] Authors, int Price, int Inventory_Quantity) throws SQLException {
         boolean isInputValid=true;
         ISBN = ISBN.trim();
         Title = Title.trim();
@@ -117,7 +100,7 @@ public class Book {
         return isInputValid;
     }
     
-    public int size(Connection conn) throws SQLException{
+    public static int size(Connection conn) throws SQLException{
         int size=-1;
         try {
             Statement stmt = conn.createStatement();
@@ -130,20 +113,20 @@ public class Book {
         return size;
     }
 
-    public void search(Connection conn, Book b) throws SQLException{
+    public static void search(Connection conn, String ISBN, String Title, String[] Authors) throws SQLException{
         boolean inputerror = true;
         try {
-            inputerror = isValid_ISBN(b.ISBN) && isValid_Title(b.Title) && isValid_Authors(b.Authors);
+            inputerror = isValid_ISBN(ISBN) && isValid_Title(Title) && isValid_Authors(Authors);
             if (!inputerror) 
                 System.out.println("No result: invaild input");
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM book where ISBN = ? AND Title = ?");
-            stmt.setString(1, b.ISBN);
-            stmt.setString(2, b.Title);
+            stmt.setString(1, ISBN);
+            stmt.setString(2, Title);
             ResultSet rs =  stmt.executeQuery();
 
             /* For checking authors */
             PreparedStatement tempstmt = conn.prepareStatement("SELECT Name FROM write_ where ISBN = ?");
-            tempstmt.setString(1, b.ISBN);
+            tempstmt.setString(1, ISBN);
             ResultSet temprs = tempstmt.executeQuery();
 
             while (temprs.next()) 
@@ -159,7 +142,7 @@ public class Book {
                 while (rs.next()) {
                     System.out.print("Result: \n");
                     System.out.println("ISBN: " + rs.getString(1) + "\nTitle: " + rs.getString(2) 
-                    + "\nAuthor: " + Arrays.toString(b.Authors) + "\nPrice: " + rs.getString(3) 
+                    + "\nAuthor: " + Arrays.toString(Authors) + "\nPrice: " + rs.getString(3) 
                     + "\nQuantity: " + rs.getString(4));
                 }
             }

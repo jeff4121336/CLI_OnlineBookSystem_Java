@@ -25,9 +25,9 @@ public class BookSystem{
         int bookSize=-1;
         int customerSize=-1;
         int orderSize=-1;
-        bookSize = db.bookSize();
-        customerSize = db.customerSize();
-        orderSize = db.orderSize();
+        bookSize = db.getBookSize();
+        customerSize = db.getCustomerSize();
+        orderSize = db.getOrderSize();
         
         dbtime._dbtime();
         System.out.println("\n===== Welcome to Book Ordering Management System =====");
@@ -74,9 +74,9 @@ public class BookSystem{
 
     private void Operation_2_Menu(Scanner s) {
         System.out.println("\n===== Customer Operation - Please choose from the following operation =====");
-        System.out.println("\n> 1. Book Searching\n> 2. Placing Order\n> 3. Check History Order");
+        System.out.println("\n> 1. Book Searching\n> 2. Placing Order\n> 3. Check History Order\n> 4. Back To Main Menu");
 
-        final int a = dbinput.PrintScan(1, 3, s);
+        final int a = dbinput.PrintScan(1, 4, s);
         
         switch (a) {
             case 1:
@@ -94,14 +94,14 @@ public class BookSystem{
 
     private void Operation_3_Menu(Scanner s) {
         System.out.println("\n==== BookStore Operation - Please choose from the following operation =====");
-        System.out.println("\n> 1. Order Update\n> 2. Order Query\n> 3. N Most Popular Books"); 
+        System.out.println("\n> 1. Order Update\n> 2. Order Query\n> 3. N Most Popular Books\n> 4. Back To Main Menu"); 
         
         /* Modify the parameters in printscan if u need 
          * PLEASE DONT CHANGE THE SCANNER, Use the one pass into function, i.e. s
          * some scanner bugs will occur if multiple scanner used in an application :(
         */
 
-        final int a = dbinput.PrintScan(1, 3, s);
+        final int a = dbinput.PrintScan(1, 4, s);
         
         // Add more if u need 
         switch (a) {
