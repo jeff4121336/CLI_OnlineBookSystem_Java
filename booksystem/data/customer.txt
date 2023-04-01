@@ -1,5 +1,5 @@
-1	Ben	Flat 10 14/F ABC building,Tai Po
-2	Ken	Flat 25 12/F XYZ building 150 Happy Road,Sha Tin,Hong Kong
-3	Mary	Flat 12, 25/F,Wealthy estate,Yuen Long
-4	John	Room 1210 Fun Center,Kwun Tong,Hong Kong
-5	Edmond	Rm.2303 23/F. 1 Harbour Rd. Wanchai,Wan Chai District,Hong Kong
+1	Ben	    Flat 10 14/F ABC building,Tai Po
+2	Ken	    Flat 25 12/F XYZ building 150 Happy Road Sha Tin Hong Kong
+3	Mary	Flat 12, 25/F Wealthy estate Yuen Long
+4	John	Room 1210 Fun Center Kwun Tong Hong Kong
+5	Edmond	Rm.2303 23/F. 1 Harbour Rd. Wanchai Wan Chai District Hong Kong

@@ -136,19 +136,19 @@ public class Book {
                 }
              
             
-            if (rs == null) 
-                System.out.println("No result: Book does not exists");
-            else { 
-                while (rs.next()) {
-                    System.out.print("Result: \n");
-                    System.out.println("ISBN: " + rs.getString(1) + "\nTitle: " + rs.getString(2) 
-                    + "\nAuthor: " + Arrays.toString(Authors) + "\nPrice: " + rs.getString(3) 
-                    + "\nQuantity: " + rs.getString(4));
-                }
+            while (rs.next()) {
+                System.out.print("Result: \n");
+                System.out.println("ISBN: " + rs.getString(1) + "\nTitle: " + rs.getString(2) 
+                + "\nAuthor: " + Arrays.toString(Authors) + "\nPrice: " + rs.getString(3) 
+                + "\nQuantity: " + rs.getString(4));
+                return;
             }
+            
         } catch (SQLException e) {
             System.out.println("ERROR: " + e);
         }
+
+        System.out.println("No result: Book does not exists");
         return;
     }
 }

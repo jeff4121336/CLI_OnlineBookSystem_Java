@@ -29,11 +29,12 @@ public class BookSystem{
         customerSize = db.getCustomerSize();
         orderSize = db.getOrderSize();
         
-        dbtime._dbtime();
+        String time = dbtime._dbtime();
+        System.out.println("Current Time: " + time);
         System.out.println("\n===== Welcome to Book Ordering Management System =====");
-        System.out.println("===== Version 1.0 Last Updated: 27/02/2023 =====");
+        System.out.println("===== Final Version Last Updated: 01/04/2023 =====");
         System.out.println("===== Data Base Record: book("+ bookSize +") customer("+ customerSize+") order("+ orderSize +")=====\n");
-        System.out.println("> 1. Database Initialization\n> 2. Customer Operation\n> 3. Bookstore Operation\n> 4. Quit\n");
+        System.out.println("> 1. Database Initialization\n> 2. Customer Operation\n> 3. Bookstore Operation\n> 4. Show Information\n> 5. Quit");
         System.out.println("Please Enter Your Action:");   
     }
 
@@ -42,7 +43,7 @@ public class BookSystem{
             case 1:
                 try{
                     Operation_1_Menu(s);
-                }catch(SQLException e){
+                } catch(SQLException e){
                     System.out.println(e);
                 }
                 break;
@@ -55,8 +56,11 @@ public class BookSystem{
             case 4:
                 Operation_4_Menu(s);
                 break;
+            case 5:
+                Operation_5_Menu(s);
+                break;
         }
-        if (i>0 && i<4){
+        if (i>0 && i<5){
             System.out.println("Press enter to return to main menu");
             s.nextLine();
         }
@@ -118,6 +122,25 @@ public class BookSystem{
 
     /* um... Not sure this part need what */
     private void Operation_4_Menu(Scanner s) {
+        System.out.println("\n==== Show Database - Please choose the database you want to look =====");
+        System.out.println("\n> 1. Show Table\n> 2. Back To Main Menu"); 
+        
+        /* Modify the parameters in printscan if u need 
+         * PLEASE DONT CHANGE THE SCANNER, Use the one pass into function, i.e. s
+         * some scanner bugs will occur if multiple scanner used in an application :(3
+        */
+
+        final int a = dbinput.PrintScan(1, 2, s);
+        
+        // Add more if u need 
+        switch (a) {
+            case 1:
+                db.Show_table(s);
+                break;
+        }
+    }
+
+    private void Operation_5_Menu(Scanner s) {
         
     }
 

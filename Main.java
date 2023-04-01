@@ -39,9 +39,9 @@ public class Main {
           }
           
           // Scanner _sscan = new Scanner(System.in);
-          action = dbinput.PrintScan(1, 4, scan);
+          action = dbinput.PrintScan(1, 5, scan);
           bs.OperationCall(action, scan);
-        } while (action != 4 && action > 0 && action < 5);
+        } while (action != 5 && action > 0 && action < 6);
         
         scan.close();
         try{

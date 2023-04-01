@@ -41,7 +41,7 @@ public class DataBase {
       Statement stmt = conn.createStatement();
       String[] createTable={ "CREATE TABLE book ( ISBN VARCHAR(13) PRIMARY KEY, Title VARCHAR2(100), Price INTEGER, Inventory_Quantity INTEGER)",
       "CREATE TABLE customer (UID_ VARCHAR2(10) PRIMARY KEY, Name VARCHAR2(50), Address VARCHAR2(200))",
-      "CREATE TABLE order_ (OID VARCHAR2(8) PRIMARY KEY, Order_Date DATE, Shipping_Status VARCHAR2(20))",
+      "CREATE TABLE order_ (OID VARCHAR2(8) PRIMARY KEY, Order_DateTime VARCHAR2(200), Shipping_Status VARCHAR2(20))",
       "CREATE TABLE author (Name VARCHAR2(50) PRIMARY KEY)",
       "CREATE TABLE write_ (Name VARCHAR2(50),ISBN VARCHAR2(13),PRIMARY KEY (Name, ISBN),FOREIGN KEY (Name) REFERENCES author(Name),FOREIGN KEY (ISBN) REFERENCES book(ISBN))",
       "CREATE TABLE product (OID VARCHAR2(8),ISBN VARCHAR2(13),Order_Quantity INTEGER,PRIMARY KEY (OID, ISBN),FOREIGN KEY (OID) REFERENCES order_(OID),FOREIGN KEY (ISBN) REFERENCES book(ISBN))",
@@ -69,7 +69,9 @@ public class DataBase {
         }
         myReader.close();
       } catch (FileNotFoundException e) {
-        System.out.println("An error occurred: "+e);
+        System.out.println("Missing book.txt");
+      } catch (Exception e) {
+        System.out.println("Error when init with book.txt: " + e);
       }
       // initialize customer data
       try {
@@ -82,7 +84,9 @@ public class DataBase {
         }
         myReader.close();
       } catch (FileNotFoundException e) {
-        System.out.println("An error occurred: "+e);
+        System.out.println("Missing customer.txt");
+      } catch (Exception e) {
+        System.out.println("Error when init with customer.txt: " + e);
       }
       // initialize order data
       try {
@@ -91,15 +95,17 @@ public class DataBase {
         Scanner myReader = new Scanner(myObj);
         while (myReader.hasNextLine()) {
           String[] data = myReader.nextLine().split("\t");
-          Date date = Date.valueOf(data[2]);
-          Order.insert(conn, data[0], data[1], date, data[3],Integer.parseInt(data[4]) ,data[5]);
+          //System.out.println(data[0] + ", " + data[1] + ", " + data[2] + ", " + data[3]  + ", " + Integer.parseInt(data[4]) + ", " + data[5]);
+          Order.insert(conn, data[0], data[1], data[2], data[3], Integer.parseInt(data[4]), data[5]);
         }
         myReader.close();
       } catch (FileNotFoundException e) {
-        System.out.println("An error occurred: "+e);
+        System.out.println("Missing in order.txt");
+      } catch (Exception e) {
+        System.out.println("Error when init with order.txt: " + e);
       }
-    }
-    /* Function 1 - Database Init */
+    } 
+
     public void DataBaseInit() throws SQLException {
       System.out.println("initializing...");
       DropAllTables();
@@ -107,46 +113,90 @@ public class DataBase {
       DataInit();
       System.out.println("initialization finished");
     }
-  public void Order_place(Scanner s) {
-    System.out.println("Placing Order!");
-  }
-  public void Order_history_check(Scanner s) {
-    System.out.println("Check History Order by UID...");
-    String _uid; 
-    System.out.println("Please enter your UID to the history order"); //edit
-    _uid = s.nextLine();
 
-    Order o = new Order();
-    try {
-      o.check(conn, _uid);
-    } catch (SQLException e) {
-      System.out.println("ERROR: "  + e);
-    }
+    
+    
+    public void Order_place(Scanner s) {
+      System.out.println("Place an Order...");
+      String[] _input, _info;
+      String _name, _address;
       
-  }
+      System.out.println("Enter your order(s): (in the form [Book ISBN], [Quantity])");
+      System.out.println("e.g. 2-2222-2222-2, 4, 5-4444-3333-4, 5, ....");
+      String input = s.nextLine();
+      _input = input.split("[,]");
 
-  // public void Show_booklist() { function 4
-  //   PreparedStatement cstmt;
-  //   try {
-  //     cstmt = conn.prepareStatement("SELECT * FROM write_, book WHERE book.ISBN = write_.ISBN"); /* the merged table and */
-  //     ResultSet rs = cstmt.executeQuery();
-  //     if (rs == null) {
-  //       System.out.println("No books in database.");
-  //       return;
-  //     } else {
-  //       while (rs.next()) {
-  //         for (int i = 1; i <= 5; i++) {
-  //           String columnValue = rs.getString(i);
-  //           System.out.print(columnValue + " ");
-  //         }
-  //         System.out.println("\n");
-  //       }
-  //     }
-  //   } catch (Exception e) {
-  //     System.out.println("An error occurred: " + e);
-  //   }
-  // }
+      System.out.println("Enter your personal info: (in the form [name], [Address without ','])");
+      System.out.println("e.g. Chan, 1/F BABC House Kwun Tong HK");
+      String info = s.nextLine();
+      _info = info.split("[,]");
+      
+      if (_info.length != 2) {
+          System.out.println("Invaild input for personal information, excess comma or missing information");
+          return;
+      }
+      
+      _name = _info[0];
+      _address = _info[1];
 
+      for (int i = 0; i < _input.length; i++) {
+        _input[i] = _input[i].strip();
+        if (_input.length % 2 == 1) {
+          System.out.println("Invaild input for order, excess comma or missing information");
+          return;
+        }
+        if (i % 2 == 0) {
+          if (!Book.isValid_ISBN(_input[i])) {
+            System.out.println("Invaild ISBN detected or missing input"); 
+            return;
+          }
+        } else {
+          if (!Order.isValid_Order_Quantity(Integer.parseInt(_input[i]))) {
+            System.out.println("Invaild Quantity detected or missing input"); 
+            return;
+          }
+        }
+      }
+
+      try {
+        int nextUid = Customer.size(conn) + 1;
+        int nextOid = Order.size(conn) + 1;
+        String time = dbtime._dbtime();
+        if(!Customer.insert(conn, Integer.toString(nextUid) , _name, _address)) {
+          System.out.println("Customer info insert failed.");
+          return;
+        }
+        //onnection conn, String OID, String UID, String Order_DateTime, String ISBN, int Order_Quantity, String Shipping_Stat
+        for (int i = 0; i < _input.length; i += 2) {
+          if (!(Order.insert(conn, Integer.toString(nextOid), Integer.toString(nextUid), time,_input[i], Integer.parseInt(_input[i + 1]), "received"))) {
+            System.out.println("Order insert failed.");
+            return;
+          }
+        }
+      } catch (SQLException e) {
+        System.out.println();
+      }
+
+      System.out.println("Order insert process finished");
+      return;
+    }
+    
+    public void Order_history_check(Scanner s) {
+      System.out.println("Check History Order by UID...");
+      String _uid; 
+      System.out.println("Please enter your UID to the history order"); //edit
+      _uid = s.nextLine();
+  
+      Order o = new Order();
+      try {
+        o.check(conn, _uid);
+      } catch (SQLException e) {
+        System.out.println("ERROR: "  + e);
+      }
+        
+    }
+
+  
   public void Book_Search(Scanner s) {
     String _isbn, _title, authors;
     String[] _authors = null;
@@ -157,7 +207,7 @@ public class DataBase {
     _isbn = s.nextLine();
     System.out.println("Please enter the BookTitle that you like to search:"); 
     _title = s.nextLine();
-    System.out.println("Please enter the ISBN that you like to search: (in the form [Author Name 1], [Author Name 2] ...)"); 
+    System.out.println("Please enter the Author(s) of the book: (in the form [Author Name 1], [Author Name 2] ...)"); 
     authors = s.nextLine();
     _authors = authors.split("[,]");
     for (int i = 0; i < _authors.length; i++) 
@@ -169,7 +219,6 @@ public class DataBase {
       System.out.println("An error occurred: " + e);
     }
   }
-
 
     public void Order_update(Scanner s) {
       String order_id;
@@ -202,6 +251,7 @@ public class DataBase {
     public int getOrderSize() throws SQLException{
       return Order.size(conn);
     }
+
     public void Order_query() {
       try {    
         String[] statusValues = {"ordered", "shipped", "received"};
@@ -215,7 +265,7 @@ public class DataBase {
                 System.out.println("No orders in the " + status + " status.");
             }else{
                 while (rs.next()) {
-                  System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getDate("Order_Date") + " Shipping Status: " + rs.getString("Shipping_Status"));
+                  System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getString("Order_DateTime") + " Shipping Status: " + rs.getString("Shipping_Status"));
                 }
             }
             rs.close();
@@ -284,5 +334,63 @@ public class DataBase {
       System.out.println("An error occurred: " + e);
   }    
   }      
+
+
+  //  Show_booklist
+  //     cstmt = conn.prepareStatement("SELECT * FROM write_, book WHERE book.ISBN = write_.ISBN"); /* the merged table and */
+
+  public void Show_table(Scanner s){
+    
+    System.out.println("Type the table name you want to show: ");
+    System.out.println("Choose: \n> 1. book \n> 2. customer \n> 3. author \n> 4. order_ \n> 5. write \n> 6. product \n> 7. purchaser ");
+
+    try {    
+      int _table = dbinput.PrintScan(1, 7, s);
+      PreparedStatement printstmt = null;
+      switch (_table) {
+        case 1:
+          printstmt = conn.prepareStatement("SELECT * FROM book");
+          break;
+        case 2:
+          printstmt = conn.prepareStatement("SELECT * FROM customer");
+          break;
+        case 3:
+          printstmt = conn.prepareStatement("SELECT * FROM author");
+          break;
+        case 4:
+          printstmt = conn.prepareStatement("SELECT * FROM order_");
+          break;
+        case 5:
+          printstmt = conn.prepareStatement("SELECT * FROM write");
+          break;
+        case 6:
+          printstmt = conn.prepareStatement("SELECT * FROM product");
+          break;
+        case 7:
+          printstmt = conn.prepareStatement("SELECT * FROM purchaser");
+          break;
+      }
+      ResultSet prs = printstmt.executeQuery();
+      ResultSetMetaData rsmd = prs.getMetaData();
+      int columnsNumber = rsmd.getColumnCount();
+      
+      if (prs.next() == false) { 
+        System.out.println("No such table");
+        return;
+      } else { 
+        System.out.println(" ");
+        do {
+          for(int i = 1 ; i <= columnsNumber; i++){
+            String columnsName = rsmd.getColumnName(i);
+            System.out.print(columnsName + ": " + prs.getString(i) + "  ");
+          }
+          System.out.println(); 
+        } while(prs.next());
+      }      
+    } catch (Exception e) {
+      System.out.println("Error: " + e);
+    }
+
+  }
   }
   

@@ -29,7 +29,7 @@ public class Order {
         return true;
     }
 
-    public static boolean insert(Connection conn, String OID, String UID, Date Order_Date, String ISBN, int Order_Quantity, String Shipping_Status) throws SQLException{
+    public static boolean insert(Connection conn, String OID, String UID, String Order_DateTime, String ISBN, int Order_Quantity, String Shipping_Status) throws SQLException{
         boolean isInputValid = true;
         OID = OID.trim();
         UID = UID.trim();
@@ -44,7 +44,7 @@ public class Order {
         try {
             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO order_ values(?,?,?)");
             pstmt.setString(1, OID);
-            pstmt.setDate(2, Order_Date);
+            pstmt.setString(2, Order_DateTime);
             pstmt.setString(3, Shipping_Status);
             pstmt.executeUpdate();
             pstmt.close();
@@ -125,22 +125,24 @@ public class Order {
 
     public void check(Connection conn,String _uid) throws SQLException {
         try {
-            PreparedStatement ostmt = conn.prepareStatement("SELECT order_.OID, UID_, ISBN, ORDER_DATE, ORDER_QUANTITY, SHIPPING_STATUS from order_, purchaser, product Where order_.OID = purchaser.OID And order_.OID = product.OID And UID_ = ?");
+            PreparedStatement ostmt = conn.prepareStatement("SELECT order_.OID, UID_, ISBN, Order_DateTime, ORDER_QUANTITY, SHIPPING_STATUS from order_, purchaser, product Where order_.OID = purchaser.OID And order_.OID = product.OID And UID_ = ?");
             ostmt.setString(1, _uid);
-            ResultSet rs = ostmt.executeQuery(); /* Print result here */
-            if (rs == null) 
-                System.out.println("No order for user with uid: " + _uid);
-            else {
-                while (rs.next()) {
+            ResultSet rs = ostmt.executeQuery(); /* Print result here */ 
+            
+            if (rs.next() == false) { 
+                System.out.println("No order for UID: " + _uid);
+                return;
+            } else { 
+                do {                 
                     System.out.println("OID: " + rs.getString(1) + " UID: " + rs.getString(2) 
-                    + " Date " + rs.getString(4) + " ISBN: " + rs.getString(3)
+                    + " Date: " + rs.getString(4) + " ISBN: " + rs.getString(3)
                     + " Quantity: " + rs.getString(5) + " Status: " + rs.getString(6));
-                }
+                } while (rs.next()); 
             }
         } catch (Exception e) {
             System.out.println("ERROR: " + e);
         }
-      
+        return;
     }
 
 }
