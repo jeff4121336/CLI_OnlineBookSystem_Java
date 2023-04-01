@@ -81,13 +81,12 @@ public class BookSystem{
         switch (a) {
             case 1:
                 db.Book_Search(s);
-
                 break;
             case 2:
-                System.out.println("hi 2");
+                db.Order_place(s);
                 break;
             case 3:
-                System.out.println("hi 3");
+                db.Order_history_check(s);
                 break;
         }
     }
@@ -98,7 +97,7 @@ public class BookSystem{
         
         /* Modify the parameters in printscan if u need 
          * PLEASE DONT CHANGE THE SCANNER, Use the one pass into function, i.e. s
-         * some scanner bugs will occur if multiple scanner used in an application :(
+         * some scanner bugs will occur if multiple scanner used in an application :(3
         */
 
         final int a = dbinput.PrintScan(1, 4, s);
