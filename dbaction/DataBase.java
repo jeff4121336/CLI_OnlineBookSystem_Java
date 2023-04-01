@@ -1,7 +1,9 @@
 package dbaction;
 import java.sql.*;
 import java.io.*;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.function.IntUnaryOperator;
 
 import dbaction.model.*;
 
@@ -120,6 +122,37 @@ public class DataBase {
       System.out.println("Place an Order...");
       String[] _input, _info;
       String _name, _address;
+      int bookcounter = 0;
+
+      String[] _booklist;
+      int[] _quantitylist;
+       
+      try {
+        PreparedStatement checkISBNandQuan = conn.prepareStatement("SELECT ISBN, Inventory_Quantity FROM book");
+        ResultSet rs = checkISBNandQuan.executeQuery();
+        _booklist = new String[Book.size(conn)];
+        _quantitylist = new int[Book.size(conn)];
+
+        if (!rs.next()) {
+          System.out.println("Empty booklist, no order aviliable"); 
+          return;
+        } else {
+          do {
+            _booklist[bookcounter] = rs.getString(1);
+            _quantitylist[bookcounter] = rs.getInt(2);
+            bookcounter++;
+          } while (rs.next());
+        }
+      } catch (Exception e) {
+        System.out.println("Fail to fetch checking resources: " + e);
+        return;
+      }
+      System.out.println("Complete fetching Book resources...");
+
+      // for (int j = 0; j < _booklist.length; j++)  Debug
+      //   System.out.println("ISBN exist: " + _booklist[j]);
+      // for (int j = 0; j < _quantitylist.length; j++) 
+      //   System.out.println("Quantity exist: " + _quantitylist[j]);
       
       System.out.println("Enter your order(s): (in the form [Book ISBN], [Quantity])");
       System.out.println("e.g. 2-2222-2222-2, 4, 5-4444-3333-4, 5, ....");
@@ -145,14 +178,24 @@ public class DataBase {
           System.out.println("Invaild input for order, excess comma or missing information");
           return;
         }
+
+
         if (i % 2 == 0) {
-          if (!Book.isValid_ISBN(_input[i])) {
-            System.out.println("Invaild ISBN detected or missing input"); 
+          if (!Arrays.asList(_booklist).contains(_input[i])) {
+            System.out.println("Not exist ISBN detected"); 
+            return;
+          }
+          if (!Book.isValid_ISBN(_input[i]) ) {
+            System.out.println("Invaild/missing ISBN"); 
             return;
           }
         } else {
-          if (!Order.isValid_Order_Quantity(Integer.parseInt(_input[i]))) {
-            System.out.println("Invaild Quantity detected or missing input"); 
+          if (!Order.isValid_Order_Quantity(Integer.parseInt(_input[i]))){
+            System.out.println("Invaild/missing Quantity"); 
+            return;
+          }  
+          if (Integer.parseInt(_input[i]) > _quantitylist[i]) {
+            System.out.println("Excess Quantity detected"); 
             return;
           }
         }
@@ -334,10 +377,6 @@ public class DataBase {
       System.out.println("An error occurred: " + e);
   }    
   }      
-
-
-  //  Show_booklist
-  //     cstmt = conn.prepareStatement("SELECT * FROM write_, book WHERE book.ISBN = write_.ISBN"); /* the merged table and */
 
   public void Show_table(Scanner s){
     
