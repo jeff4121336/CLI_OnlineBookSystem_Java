@@ -113,41 +113,96 @@ public class Book {
         return size;
     }
 
-    public static void search(Connection conn, String ISBN, String Title, String[] Authors) throws SQLException{
-        boolean inputerror = true;
+    private static void fetch_authors(Connection conn ,String ISBN) throws SQLException {
+        PreparedStatement tempstmt = conn.prepareStatement("SELECT Name FROM write_ where ISBN = ?");
+        tempstmt.setString(1, ISBN);
+        ResultSet temprs = tempstmt.executeQuery();
+        String[] authorlist = new String[20];
+        int count = 0;
+
+        while (temprs.next()) {
+            authorlist[count++] = temprs.getString(1);
+        }
+
+        System.out.print("All Author(s):");
+        for (String i : authorlist) {
+            if (i == null) {
+                System.out.println("\n");
+                return; //end of author list
+            }
+            System.out.print("  " + i);
+        }
+    
+        return;
+    }
+    public static void search_by_Title(Connection conn, String Title) throws SQLException{
         try {
-            inputerror = isValid_ISBN(ISBN) && isValid_Title(Title) && isValid_Authors(Authors);
-            if (!inputerror) 
+            if (!isValid_Title(Title)) {
                 System.out.println("No result: invaild input");
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM book where ISBN = ? AND Title = ?");
-            stmt.setString(1, ISBN);
-            stmt.setString(2, Title);
+                return;
+            }
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM book where Title = ? ");
+            stmt.setString(1, Title);
             ResultSet rs =  stmt.executeQuery();
-
-            /* For checking authors */
-            PreparedStatement tempstmt = conn.prepareStatement("SELECT Name FROM write_ where ISBN = ?");
-            tempstmt.setString(1, ISBN);
-            ResultSet temprs = tempstmt.executeQuery();
-
-            while (temprs.next()) 
-                if (!Arrays.asList(Authors).contains(temprs.getString(1))) {
-                    System.out.println("No result: Book does not exists");
-                    return;
-                }
-             
             
             while (rs.next()) {
                 System.out.print("Result: \n");
                 System.out.println("ISBN: " + rs.getString(1) + "\nTitle: " + rs.getString(2) 
-                + "\nAuthor: " + Arrays.toString(Authors) + "\nPrice: " + rs.getString(3) 
-                + "\nQuantity: " + rs.getString(4));
+                + "\nPrice: " + rs.getString(3) + "\nQuantity: " + rs.getString(4));
+                fetch_authors(conn ,rs.getString(1));
                 return;
             }
-            
         } catch (SQLException e) {
             System.out.println("ERROR: " + e);
         }
+        System.out.println("No result: Book does not exists");
+        return;
+    }
 
+    public static void search_by_Authors(Connection conn, String AuthorName) throws SQLException{
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM book, write_ where book.ISBN = write_.ISBN AND write_.Name = ? ");
+            stmt.setString(1, AuthorName);
+            ResultSet rs =  stmt.executeQuery();
+            
+            if (!rs.next()) {
+                System.out.println("No result: Book does not exists");
+                return;
+            } else {
+                do {
+                    System.out.print("Result: \n");
+                    System.out.println("ISBN: " + rs.getString(1) + "\nTitle: " + rs.getString(2) 
+                    + "\nPrice: " + rs.getString(3) 
+                    + "\nQuantity: " + rs.getString(4));
+                    fetch_authors(conn, rs.getString(1));
+                } while (rs.next());
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR: " + e);
+        }
+        return;
+    }
+
+    public static void search_by_ISBN(Connection conn, String ISBN) throws SQLException{
+        try {
+            if (!isValid_ISBN(ISBN)) {
+                System.out.println("No result: invaild input");
+                return;
+            }
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM book where ISBN = ? ");
+            stmt.setString(1, ISBN);
+            ResultSet rs =  stmt.executeQuery();
+            
+            while (rs.next()) {
+                System.out.print("Result: \n");
+                System.out.println("ISBN: " + rs.getString(1) + "\nTitle: " + rs.getString(2) 
+                + "\nPrice: " + rs.getString(3) + "\nQuantity: " + rs.getString(4));
+                fetch_authors(conn, rs.getString(1));
+                return;
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR: " + e);
+        }
         System.out.println("No result: Book does not exists");
         return;
     }
@@ -166,8 +221,8 @@ public class Book {
             }
             if (originalvalue - orderquantity < 0) {
                 System.out.println("Excess quantity has been entered. There are only " + originalvalue 
-                + " book (for ISBN: " + ISBN + ") in our library, but you ordered " + orderquantity + ".");
-                System.out.println("Current order has been aborted and dismiss all further order(s)");
+                + " book (for ISBN: " + ISBN + ")in our library, but you ordered " + orderquantity + ".");
+                System.out.println("Previous order(s) has been accepted, but current/furhter order(s) has been aborted");
                 return false;
             }
 

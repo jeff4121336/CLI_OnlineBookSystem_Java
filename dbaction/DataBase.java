@@ -149,15 +149,17 @@ public class DataBase {
       }
       System.out.println("Complete fetching Book resources...");
 
-      for (int j = 0; j < _booklist.length; j++)  
-        System.out.println("ISBN exist: " + _booklist[j]);
-      for (int j = 0; j < _quantitylist.length; j++) 
-        System.out.println("Quantity exist: " + _quantitylist[j]);
+      // Debug use
+      // for (int j = 0; j < _booklist.length; j++)  
+      //   System.out.println("ISBN exist: " + _booklist[j]);
+      // for (int j = 0; j < _quantitylist.length; j++) 
+      //   System.out.println("Quantity exist: " + _quantitylist[j]);
       
       System.out.println("Enter your order(s): (in the form [Book ISBN], [Quantity])");
       System.out.println("e.g. 2-2222-2222-2, 4, 5-4444-3333-4, 5, ....");
       String input = s.nextLine();
       _input = input.split("[,]");
+
 
       System.out.println("Enter your personal info: (in the form [name], [Address without ','])");
       System.out.println("e.g. Chan, 1/F BABC House Kwun Tong HK");
@@ -204,6 +206,12 @@ public class DataBase {
         String time = dbtime._dbtime();
 
         int ordercount = 0;
+
+        if(!Customer.insert(conn, Integer.toString(nextUid) , _name, _address)) {
+          System.out.println("Customer info insert failed.");
+          return;
+        }
+
         for (int i = 0; i < _input.length; i += 2, ordercount++) {
           if (!Book.update(conn, _input[i], Integer.parseInt(_input[i + 1]))) 
             return;
@@ -211,13 +219,7 @@ public class DataBase {
             System.out.println("Order insert failed.");
             return;
           }
-        }          
-        
-        if(!Customer.insert(conn, Integer.toString(nextUid) , _name, _address)) {
-          System.out.println("Customer info insert failed.");
-          return;
-        }
-
+        }      
       } catch (SQLException e) {
         System.out.println("Error for insert to database: " + e);
         return;
@@ -241,28 +243,43 @@ public class DataBase {
       }
         
     }
-
   
   public void Book_Search(Scanner s) {
-    String _isbn, _title, authors;
-    String[] _authors = null;
+    String _isbn, _title, _authors;
     
     System.out.println("Book Searching..."); 
 
-    System.out.println("Please enter the ISBN that you like to search: (in the form X-XXXX-XXXX-X)"); //edit
-    _isbn = s.nextLine();
-    System.out.println("Please enter the BookTitle that you like to search:"); 
-    _title = s.nextLine();
-    System.out.println("Please enter the Author(s) of the book: (in the form [Author Name 1], [Author Name 2] ...)"); 
-    authors = s.nextLine();
-    _authors = authors.split("[,]");
-    for (int i = 0; i < _authors.length; i++) 
-      _authors[i] = _authors[i].strip();
+    System.out.println("Search by:\n" +"> 1. ISBN\n" + "> 2. Book Title\n" + "> 3. Authors\n"); //edit
+    int method = dbinput.PrintScan(1, 3, s);
 
-    try {
-      Book.search(conn , _isbn, _title, _authors);
-    } catch (Exception e) {
-      System.out.println("An error occurred: " + e);
+    switch (method) {
+      case 1:
+        System.out.println("Please enter the ISBN that you like to search: (in the form X-XXXX-XXXX-X)"); //edit
+        _isbn = s.nextLine();   
+        try {
+          Book.search_by_ISBN(conn, _isbn);
+        } catch (Exception e) {
+          System.out.println("An error occurred: " + e);
+        }
+        break;
+      case 2:
+        System.out.println("Please enter the BookTitle that you like to search:"); 
+        _title = s.nextLine();   
+        try {
+          Book.search_by_Title(conn, _title);
+        } catch (Exception e) {
+          System.out.println("An error occurred: " + e);
+        }
+        break;
+      case 3:
+        System.out.println("Please enter the Author Name of the book: (1 only)"); 
+        _authors = s.nextLine();
+        try {
+          Book.search_by_Authors(conn, _authors);
+        } catch (Exception e) {
+          System.out.println("An error occurred: " + e);
+        }
+        break;
     }
   }
 
@@ -301,7 +318,9 @@ public class DataBase {
     public void Order_query() {
       try {    
         String[] statusValues = {"ordered", "shipped", "received"};
-
+        /* Debug */
+        Order.Order_Shipping(conn);
+        /* Debug */
         for (String status : statusValues) {
             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ORDER_ WHERE Shipping_Status=? ORDER BY OID");
             pstmt.setString(1, status);
@@ -384,7 +403,7 @@ public class DataBase {
   public void Show_table(Scanner s){
     
     System.out.println("Type the table name you want to show: ");
-    System.out.println("Choose: \n> 1. book \n> 2. customer \n> 3. author \n> 4. order_ \n> 5. write \n> 6. product \n> 7. purchaser ");
+    System.out.println("Choose: \n> 1. book \n> 2. customer \n> 3. author \n> 4. order_ \n> 5. write_ \n> 6. product \n> 7. purchaser ");
 
     try {    
       int _table = dbinput.PrintScan(1, 7, s);
@@ -403,7 +422,7 @@ public class DataBase {
           printstmt = conn.prepareStatement("SELECT * FROM order_");
           break;
         case 5:
-          printstmt = conn.prepareStatement("SELECT * FROM write");
+          printstmt = conn.prepareStatement("SELECT * FROM write_");
           break;
         case 6:
           printstmt = conn.prepareStatement("SELECT * FROM product");

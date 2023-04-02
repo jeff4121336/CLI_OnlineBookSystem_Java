@@ -2,6 +2,8 @@ package dbaction.model;
  
 import java.sql.*;
 
+import dbaction.dbtime;
+
 public class Order {
 
     public static boolean isValid_OID(String OID){
@@ -125,7 +127,8 @@ public class Order {
 
     public void check(Connection conn,String _uid) throws SQLException {
         try {
-            PreparedStatement ostmt = conn.prepareStatement("SELECT order_.OID, UID_, ISBN, Order_DateTime, ORDER_QUANTITY, SHIPPING_STATUS from order_, purchaser, product Where order_.OID = purchaser.OID And order_.OID = product.OID And UID_ = ?");
+            PreparedStatement ostmt = conn.prepareStatement("SELECT order_.OID, UID_, ISBN, Order_DateTime, ORDER_QUANTITY, SHIPPING_STATUS from book, order_, purchaser, product" +
+            " Where book.ISBN = ANDorder_.OID = purchaser.OID And order_.OID = product.OID And UID_ = ?");
             ostmt.setString(1, _uid);
             ResultSet rs = ostmt.executeQuery(); /* Print result here */ 
             
@@ -141,6 +144,35 @@ public class Order {
             }
         } catch (Exception e) {
             System.out.println("ERROR: " + e);
+        }
+        return;
+    }
+
+    public static void Order_Shipping(Connection conn) throws SQLException {
+        PreparedStatement shipping_stmt = conn.prepareStatement("SELECT Order_DateTime, OID FROM ORDER_ WHERE Shipping_Status=?");
+        shipping_stmt.setString(1, "ordered");
+        ResultSet shipping_stmtrs = shipping_stmt.executeQuery();
+        int time;
+        if (!shipping_stmtrs.next())  
+            return;
+        else {
+            do {
+               time = dbtime.timecount(shipping_stmtrs.getString(1));
+
+               if (time > 30) { /* 30 seconds */
+                /* DEBUG For shipping */
+                if (time >= 86401) {
+                    System.out.println("ORDER TIME PASSED: >1 day, " + "UPDATE TO SHIPPED FOR OID: " + shipping_stmtrs.getString(2) + "\n");
+                } else {
+                    System.out.println("ORDER TIME PASSED: " + time + " second(s), " + "UPDATE TO SHIPPED FOR OID: " + shipping_stmtrs.getString(2) + "\n");
+                }
+
+                PreparedStatement update_stmt = conn.prepareStatement("UPDATE ORDER_ SET Shipping_Status = ? Where OID = ?");
+                update_stmt.setString(1, "shipped");
+                update_stmt.setString(2, shipping_stmtrs.getString(2));
+                update_stmt.executeQuery();
+               }
+            } while (shipping_stmtrs.next());
         }
         return;
     }
