@@ -13,11 +13,10 @@ public class dbinput {
                 if (input > max || input < min)
                     throw new Exception();
         } catch (NumberFormatException e) {
-            System.out.println("Invalid Input Type! Please Enter Again!");
+            System.out.println("Invalid Input!");
         } catch (Exception e) {
-            System.out.println("Invalid Input Range! Please Enter Again!");
-        }
-        
+            System.out.println("Invalid Input!");
+        } 
         return input;
     }
 

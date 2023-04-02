@@ -1,13 +1,13 @@
 0-1339-7077-9	Fundamentals of Database Systems	Elmasri, Ramez , Navathe, Shamkant	146	16
 1-2851-9614-7	Database Systems: Design, Implementation, & Management	Coronel, Carlos , Morris, Steven	195	14
 0-1326-6225-6	Modern Database Management (11th Edition)	Hoffer, Jeffrey A. , Venkataraman, Ramesh , Topi, Heikki	167	0
-0-0722-5351-7	Oracle Database 10g: The Complete Reference (Osborne ORACLE Press Series)	Loney, Kevin	169	0
+0-0722-5351-7	Oracle Database 10g: The Complete Reference (Osborne ORACLE Press Series)	Loney, Kevin	169	3
 0-0778-3634-0	College Algebra (Collegiate Math)	Miller, Julie , Gerken, Donna	245	15
 1-5657-7509-0	Saxon Math: 8/7 with Prealgebra, Student Edition 3rd Edition	SAXON PUBLISHERS	241	18
 1-3050-8895-6	Math and Science for Young Children	Charlesworth, Rosalind	271	15
 0-1335-9414-9	Computer Networking: A Top-Down Approach	Kurose, James , Ross, Keith	206	2
 1-2840-5591-4	Computer Science Illuminated	Dale, Nell , Lewis, John	137	13
-0-0072-3636-0	Damaged: The Heartbreaking True Story of a Forgotten Child	Glass, Cathy	214	5
+0-0072-3636-0	Damaged: The Heartbreaking True Story of a Forgotten Child	Glass, Cathy	214	15
 0-4391-3959-7	Harry Potter And The Goblet Of Fire	J.K. Rowling	240	7
 0-4391-3635-0	Harry Potter And The Prisoner Of Azkaban	J.K. Rowling	263	19
 0-5451-2828-5	The Tales of Beedle the Bard, Standard Edition (Harry Potter)	J.K. Rowling	102	0

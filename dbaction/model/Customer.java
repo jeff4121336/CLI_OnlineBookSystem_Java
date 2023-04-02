@@ -36,7 +36,6 @@ public class Customer {
         if (!isValid_UID(UID) || !isValid_Name(Name) || !isValid_Address(Address)){
             return false;
         }
-        
         // insert to customer
         PreparedStatement pstmt = conn.prepareStatement("INSERT INTO customer values(?,?,?)");
         pstmt.setString(1, UID);

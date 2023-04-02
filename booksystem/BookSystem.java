@@ -32,7 +32,6 @@ public class BookSystem{
         String time = dbtime._dbtime();
         System.out.println("Current Time: " + time);
         System.out.println("\n===== Welcome to Book Ordering Management System =====");
-        System.out.println("===== Final Version Last Updated: 01/04/2023 =====");
         System.out.println("===== Data Base Record: book("+ bookSize +") customer("+ customerSize+") order("+ orderSize +")=====\n");
         System.out.println("> 1. Database Initialization\n> 2. Customer Operation\n> 3. Bookstore Operation\n> 4. Show Information\n> 5. Quit");
         System.out.println("Please Enter Your Action:");   

@@ -151,4 +151,34 @@ public class Book {
         System.out.println("No result: Book does not exists");
         return;
     }
+
+    public static boolean update(Connection conn, String ISBN, int orderquantity) {
+        try {
+            int originalvalue = 0;
+            PreparedStatement temp = conn.prepareStatement("SELECT Inventory_Quantity From Book where ISBN = ?");
+            temp.setString(1, ISBN);
+            ResultSet temprs = temp.executeQuery();
+            if (temprs.next())
+                originalvalue = temprs.getInt(1);
+            else {
+                System.out.println("Error in update quantity of book after order");
+                return false;    
+            }
+            if (originalvalue - orderquantity < 0) {
+                System.out.println("Excess quantity has been entered. There are only " + originalvalue 
+                + " book (for ISBN: " + ISBN + ") in our library, but you ordered " + orderquantity + ".");
+                System.out.println("Current order has been aborted and dismiss all further order(s)");
+                return false;
+            }
+
+            PreparedStatement stmt = conn.prepareStatement("UPDATE book SET Inventory_Quantity = ? where ISBN = ?");
+            stmt.setInt(1, originalvalue - orderquantity);
+            stmt.setString(2, ISBN);
+            stmt.executeQuery();
+        } catch (Exception e) {
+            System.out.println("Error in update quantity of book after order: " + e);
+            return false;    
+        }
+        return true;    
+    }
 }

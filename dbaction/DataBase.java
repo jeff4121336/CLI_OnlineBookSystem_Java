@@ -3,7 +3,7 @@ import java.sql.*;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.function.IntUnaryOperator;
+
 
 import dbaction.model.*;
 
@@ -149,10 +149,10 @@ public class DataBase {
       }
       System.out.println("Complete fetching Book resources...");
 
-      // for (int j = 0; j < _booklist.length; j++)  Debug
-      //   System.out.println("ISBN exist: " + _booklist[j]);
-      // for (int j = 0; j < _quantitylist.length; j++) 
-      //   System.out.println("Quantity exist: " + _quantitylist[j]);
+      for (int j = 0; j < _booklist.length; j++)  
+        System.out.println("ISBN exist: " + _booklist[j]);
+      for (int j = 0; j < _quantitylist.length; j++) 
+        System.out.println("Quantity exist: " + _quantitylist[j]);
       
       System.out.println("Enter your order(s): (in the form [Book ISBN], [Quantity])");
       System.out.println("e.g. 2-2222-2222-2, 4, 5-4444-3333-4, 5, ....");
@@ -194,10 +194,7 @@ public class DataBase {
             System.out.println("Invaild/missing Quantity"); 
             return;
           }  
-          if (Integer.parseInt(_input[i]) > _quantitylist[i]) {
-            System.out.println("Excess Quantity detected"); 
-            return;
-          }
+          /* Excess Quantity detect later (in book.update) */
         }
       }
 
@@ -205,19 +202,25 @@ public class DataBase {
         int nextUid = Customer.size(conn) + 1;
         int nextOid = Order.size(conn) + 1;
         String time = dbtime._dbtime();
+
+        int ordercount = 0;
+        for (int i = 0; i < _input.length; i += 2, ordercount++) {
+          if (!Book.update(conn, _input[i], Integer.parseInt(_input[i + 1]))) 
+            return;
+          if (!(Order.insert(conn, Integer.toString(nextOid + ordercount), Integer.toString(nextUid), time,_input[i], Integer.parseInt(_input[i + 1]), "ordered"))) {
+            System.out.println("Order insert failed.");
+            return;
+          }
+        }          
+        
         if(!Customer.insert(conn, Integer.toString(nextUid) , _name, _address)) {
           System.out.println("Customer info insert failed.");
           return;
         }
-        //onnection conn, String OID, String UID, String Order_DateTime, String ISBN, int Order_Quantity, String Shipping_Stat
-        for (int i = 0; i < _input.length; i += 2) {
-          if (!(Order.insert(conn, Integer.toString(nextOid), Integer.toString(nextUid), time,_input[i], Integer.parseInt(_input[i + 1]), "received"))) {
-            System.out.println("Order insert failed.");
-            return;
-          }
-        }
+
       } catch (SQLException e) {
-        System.out.println();
+        System.out.println("Error for insert to database: " + e);
+        return;
       }
 
       System.out.println("Order insert process finished");
