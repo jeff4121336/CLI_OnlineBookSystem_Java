@@ -234,10 +234,9 @@ public class DataBase {
       String _uid; 
       System.out.println("Please enter your UID to the history order"); //edit
       _uid = s.nextLine();
-  
-      Order o = new Order();
+      
       try {
-        o.check(conn, _uid);
+        Order.check(conn, _uid);
       } catch (SQLException e) {
         System.out.println("ERROR: "  + e);
       }

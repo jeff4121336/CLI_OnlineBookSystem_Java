@@ -125,10 +125,10 @@ public class Order {
 
     }
 
-    public void check(Connection conn,String _uid) throws SQLException {
+    public static void check(Connection conn,String _uid) throws SQLException {
         try {
-            PreparedStatement ostmt = conn.prepareStatement("SELECT order_.OID, UID_, ISBN, Order_DateTime, ORDER_QUANTITY, SHIPPING_STATUS from book, order_, purchaser, product" +
-            " Where book.ISBN = ANDorder_.OID = purchaser.OID And order_.OID = product.OID And UID_ = ?");
+            PreparedStatement ostmt = conn.prepareStatement("SELECT order_.OID, UID_, book.ISBN, Order_DateTime, ORDER_QUANTITY, SHIPPING_STATUS from book, order_, purchaser, product" +
+            " Where book.ISBN = product.ISBN AND order_.OID = purchaser.OID And order_.OID = product.OID And purchaser.UID_ = ?");
             ostmt.setString(1, _uid);
             ResultSet rs = ostmt.executeQuery(); /* Print result here */ 
             
