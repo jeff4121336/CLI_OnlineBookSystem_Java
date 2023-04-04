@@ -33,8 +33,8 @@ public class DataBase {
         String query = "DROP TABLE "+ table;
         try {
           stmt.execute(query);
-        } catch (SQLException e) {  // don't know how to implement "drop if table exist" so I just throw away the error if it happened
-          System.out.println(e+query); // for dubugging: should be commented out at the end
+        } catch (SQLException e) {
+          //System.out.println(e+query); // for dubugging: should be commented out at the end
         }
       }
       stmt.close();
@@ -126,7 +126,10 @@ public class DataBase {
 
       String[] _booklist;
       int[] _quantitylist;
-       
+      
+      String uid;
+      int nextOid;
+      String time;
       try {
         PreparedStatement checkISBNandQuan = conn.prepareStatement("SELECT ISBN, Inventory_Quantity FROM book");
         ResultSet rs = checkISBNandQuan.executeQuery();
@@ -143,6 +146,7 @@ public class DataBase {
             bookcounter++;
           } while (rs.next());
         }
+        checkISBNandQuan.close();
       } catch (Exception e) {
         System.out.println("Fail to fetch checking resources: " + e);
         return;
@@ -160,73 +164,112 @@ public class DataBase {
       String input = s.nextLine();
       _input = input.split("[,]");
 
+      System.out.println("Are you an existing user having your own UID? (Y/N)");
+      String input_isExistingUser = s.nextLine();
+      switch(input_isExistingUser){
+        case "Y":
+          System.out.println("Enter your UID: ");
+          uid = s.nextLine();
+          // check if uid exists
+          try {
+            PreparedStatement pstmt_checkUID = conn.prepareStatement("SELECT UID_ FROM customer WHERE UID_= ?");
+            pstmt_checkUID.setString(1, uid);
+            ResultSet rs = pstmt_checkUID.executeQuery();
+            if (!rs.next()){
+              System.out.println("Not exist customer");
+              return;
+            }
+            pstmt_checkUID.close();
+          } catch (SQLException e) {
+            System.out.println("fail to verify the UID");
+            return;
+          }
+          break;
 
-      System.out.println("Enter your personal info: (in the form [name], [Address without ','])");
-      System.out.println("e.g. Chan, 1/F BABC House Kwun Tong HK");
-      String info = s.nextLine();
-      _info = info.split("[,]");
-      
-      if (_info.length != 2) {
-          System.out.println("Invaild input for personal information, excess comma or missing information");
+        case "N":
+          // System.out.println("Enter your personal info: (in the form [name], [Address without ','])");
+          // System.out.println("e.g. Chan, 1/F BABC House Kwun Tong HK");
+          // String info = s.nextLine();
+          // _info = info.split("[,]");
+          // if (_info.length != 2) {
+          //   System.out.println("Invaild input for personal information, excess comma or missing information");
+          //   return;
+          // }
+          // _name = _info[0];
+          // _address = _info[1];
+          System.out.println("Enter your personal info: ");
+          System.out.println("- Enter your name: ");
+          _name = s.nextLine();
+          System.out.println("- Enter your address: (The components of the address are delimited by (,))");
+          _address = s.nextLine();
+          try {
+            uid = Integer.toString(Customer.size(conn) + 1);
+            if(!Customer.insert(conn, uid, _name, _address)) {
+              System.out.println("Customer info insert failed.");
+              return;
+            }
+            System.out.println("New customer created. Your UID is " + uid);
+          } catch (SQLException e) {
+            System.out.println("Customer info insert failed.");
+            return;
+          }
+          break;
+
+        default:
+          System.out.println("Invaild input, input can only be 'Y' or 'N'");
           return;
       }
-      
-      _name = _info[0];
-      _address = _info[1];
 
       for (int i = 0; i < _input.length; i++) {
-        _input[i] = _input[i].strip();
-        if (_input.length % 2 == 1) {
-          System.out.println("Invaild input for order, excess comma or missing information");
+          _input[i] = _input[i].strip();
+          if (_input.length % 2 == 1) {
+            System.out.println("Invaild input for order, excess comma or missing information");
+            return;
+          }
+          
+          
+          if (i % 2 == 0) {
+            if (!Arrays.asList(_booklist).contains(_input[i])) {
+              System.out.println("Not exist ISBN detected"); 
+              return;
+            }
+            if (!Book.isValid_ISBN(_input[i]) ) {
+              System.out.println("Invaild/missing ISBN"); 
+              return;
+            }
+          } else {
+            if (!Order.isValid_Order_Quantity(Integer.parseInt(_input[i]))){
+              System.out.println("Invaild/missing Quantity"); 
+              return;
+            }  
+            /* Excess Quantity detect later (in book.update) */
+          }
+        }
+        
+        try {
+          nextOid = Order.size(conn) + 1;
+          time = dbtime._dbtime();
+          
+          int ordercount = 0;
+          
+          
+          
+          for (int i = 0; i < _input.length; i += 2, ordercount++) {
+            if (!Book.update(conn, _input[i], Integer.parseInt(_input[i + 1]))) 
+            return;
+            if (!(Order.insert(conn, Integer.toString(nextOid + ordercount), uid, time,_input[i], Integer.parseInt(_input[i + 1]), "ordered"))) {
+              System.out.println("Order insert failed.");
+              return;
+            }
+          }      
+        } catch (SQLException e) {
+          System.out.println("Error for insert to database: " + e);
           return;
         }
-
-
-        if (i % 2 == 0) {
-          if (!Arrays.asList(_booklist).contains(_input[i])) {
-            System.out.println("Not exist ISBN detected"); 
-            return;
-          }
-          if (!Book.isValid_ISBN(_input[i]) ) {
-            System.out.println("Invaild/missing ISBN"); 
-            return;
-          }
-        } else {
-          if (!Order.isValid_Order_Quantity(Integer.parseInt(_input[i]))){
-            System.out.println("Invaild/missing Quantity"); 
-            return;
-          }  
-          /* Excess Quantity detect later (in book.update) */
-        }
-      }
-
-      try {
-        int nextUid = Customer.size(conn) + 1;
-        int nextOid = Order.size(conn) + 1;
-        String time = dbtime._dbtime();
-
-        int ordercount = 0;
-
-        if(!Customer.insert(conn, Integer.toString(nextUid) , _name, _address)) {
-          System.out.println("Customer info insert failed.");
-          return;
-        }
-
-        for (int i = 0; i < _input.length; i += 2, ordercount++) {
-          if (!Book.update(conn, _input[i], Integer.parseInt(_input[i + 1]))) 
-            return;
-          if (!(Order.insert(conn, Integer.toString(nextOid + ordercount), Integer.toString(nextUid), time,_input[i], Integer.parseInt(_input[i + 1]), "ordered"))) {
-            System.out.println("Order insert failed.");
-            return;
-          }
-        }      
-      } catch (SQLException e) {
-        System.out.println("Error for insert to database: " + e);
+        
+        System.out.println("Order insert process finished");
         return;
-      }
-
-      System.out.println("Order insert process finished");
-      return;
+      
     }
     
     public void Order_history_check(Scanner s) {
@@ -446,7 +489,8 @@ public class DataBase {
           }
           System.out.println(); 
         } while(prs.next());
-      }      
+      }   
+      printstmt.close();   
     } catch (Exception e) {
       System.out.println("Error: " + e);
     }

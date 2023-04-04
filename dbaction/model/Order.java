@@ -32,7 +32,7 @@ public class Order {
     }
 
     public static boolean insert(Connection conn, String OID, String UID, String Order_DateTime, String ISBN, int Order_Quantity, String Shipping_Status) throws SQLException{
-        boolean isInputValid = true;
+        boolean isInsertSuccess = true;
         OID = OID.trim();
         UID = UID.trim();
         ISBN = ISBN.trim();
@@ -43,38 +43,44 @@ public class Order {
         }
         
         // insert to order
+        PreparedStatement pstmt_order = conn.prepareStatement("INSERT INTO order_ values(?,?,?)");
         try {
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO order_ values(?,?,?)");
-            pstmt.setString(1, OID);
-            pstmt.setString(2, Order_DateTime);
-            pstmt.setString(3, Shipping_Status);
-            pstmt.executeUpdate();
-            pstmt.close();
+            pstmt_order.setString(1, OID);
+            pstmt_order.setString(2, Order_DateTime);
+            pstmt_order.setString(3, Shipping_Status);
+            pstmt_order.executeUpdate();
+            pstmt_order.close();
         } catch (SQLException e) {
             System.out.println(e+"in order insertion");
+            pstmt_order.close();
+            return false;
         }
         // insert to product
+        PreparedStatement pstmt_product = conn.prepareStatement("INSERT INTO product values(?,?,?)");
         try {
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO product values(?,?,?)");
-            pstmt.setString(1, OID);
-            pstmt.setString(2, ISBN);
-            pstmt.setInt(3, Order_Quantity);
-            pstmt.executeUpdate();
-            pstmt.close();
+            pstmt_product.setString(1, OID);
+            pstmt_product.setString(2, ISBN);
+            pstmt_product.setInt(3, Order_Quantity);
+            pstmt_product.executeUpdate();
+            pstmt_product.close();
         } catch (SQLException e) {
             System.out.println(e+"in product insertion");
+            pstmt_product.close();
+            return false;
         }
         // insert to purchaser
+        PreparedStatement pstmt_purchaser = conn.prepareStatement("INSERT INTO purchaser values(?,?)");
         try {
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO purchaser values(?,?)");
-            pstmt.setString(1, OID);
-            pstmt.setString(2, UID);
-            pstmt.executeUpdate();
-            pstmt.close();
+            pstmt_purchaser.setString(1, OID);
+            pstmt_purchaser.setString(2, UID);
+            pstmt_purchaser.executeUpdate();
+            pstmt_purchaser.close();
         } catch (SQLException e) {
             System.out.println(e+"in purchaser insertion");
+            pstmt_purchaser.close();
+            return false;
         }
-        return isInputValid;
+        return isInsertSuccess;
     }
 
     public static int size(Connection conn) throws SQLException{
