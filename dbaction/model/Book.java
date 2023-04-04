@@ -141,17 +141,17 @@ public class Book {
                 System.out.println("No result: invaild input");
                 return;
             }
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM book where Title = ? ");
-            stmt.setString(1, Title);
-            ResultSet rs =  stmt.executeQuery();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM book WHERE LOWER(Title) LIKE LOWER(?)");
+            stmt.setString(1, "%" + Title.toLowerCase() + "%");
+            ResultSet rs = stmt.executeQuery();               
             
             while (rs.next()) {
                 System.out.print("Result: \n");
                 System.out.println("ISBN: " + rs.getString(1) + "\nTitle: " + rs.getString(2) 
                 + "\nPrice: " + rs.getString(3) + "\nQuantity: " + rs.getString(4));
                 fetch_authors(conn ,rs.getString(1));
-                return;
             }
+            return;
         } catch (SQLException e) {
             System.out.println("ERROR: " + e);
         }
