@@ -102,7 +102,7 @@ public class DataBase {
         }
         myReader.close();
       } catch (FileNotFoundException e) {
-        System.out.println("Missing in order.txt");
+        System.out.println("Missing order.txt");
       } catch (Exception e) {
         System.out.println("Error when init with order.txt: " + e);
       }
@@ -248,12 +248,12 @@ public class DataBase {
     
     System.out.println("Book Searching..."); 
 
-    System.out.println("Search by:\n" +"> 1. ISBN\n" + "> 2. Book Title\n" + "> 3. Authors\n"); //edit
+    System.out.println("Search by:\n" +"> 1. ISBN\n" + "> 2. Book Title\n" + "> 3. Authors\n");
     int method = dbinput.PrintScan(1, 3, s);
 
     switch (method) {
       case 1:
-        System.out.println("Please enter the ISBN that you like to search: (in the form X-XXXX-XXXX-X)"); //edit
+        System.out.println("Please enter the ISBN that you like to search: (in the form X-XXXX-XXXX-X)");
         _isbn = s.nextLine();   
         try {
           Book.search_by_ISBN(conn, _isbn);
