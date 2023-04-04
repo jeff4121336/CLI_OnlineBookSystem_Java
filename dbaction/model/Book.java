@@ -165,9 +165,9 @@ public class Book {
 
     public static void search_by_Authors(Connection conn, String AuthorName) throws SQLException{
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM book, write_ where book.ISBN = write_.ISBN AND write_.Name = ? ");
-            stmt.setString(1, AuthorName);
-            ResultSet rs =  stmt.executeQuery();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM book, write_ WHERE book.ISBN = write_.ISBN AND LOWER(write_.Name) LIKE ?");
+            stmt.setString(1, "%" + AuthorName.toLowerCase() + "%");
+            ResultSet rs = stmt.executeQuery();            
             
             if (!rs.next()) {
                 System.out.println("No result: Book does not exists");
