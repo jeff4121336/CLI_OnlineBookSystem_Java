@@ -127,20 +127,27 @@ public class Order {
 
     public static void check(Connection conn,String _uid) throws SQLException {
         try {
-            PreparedStatement ostmt = conn.prepareStatement("SELECT order_.OID, UID_, book.ISBN, Order_DateTime, ORDER_QUANTITY, SHIPPING_STATUS from book, order_, purchaser, product" +
-            " Where book.ISBN = product.ISBN AND order_.OID = purchaser.OID And order_.OID = product.OID And purchaser.UID_ = ?");
-            ostmt.setString(1, _uid);
-            ResultSet rs = ostmt.executeQuery(); /* Print result here */ 
-            
-            if (rs.next() == false) { 
-                System.out.println("No order for UID: " + _uid);
-                return;
-            } else { 
-                do {                 
-                    System.out.println("OID: " + rs.getString(1) + " UID: " + rs.getString(2) 
-                    + " Date: " + rs.getString(4) + " ISBN: " + rs.getString(3)
-                    + " Quantity: " + rs.getString(5) + " Status: " + rs.getString(6));
-                } while (rs.next()); 
+            PreparedStatement psmt = conn.prepareStatement("SELECT * FROM customer where uid_=?");
+            psmt.setString(1, _uid);
+            ResultSet nrs = psmt.executeQuery(); 
+            if (!nrs.next()){
+                System.out.println("No customer with UID " + _uid + " exixts");
+            }else{
+                PreparedStatement ostmt = conn.prepareStatement("SELECT order_.OID, UID_, book.ISBN, Order_DateTime, ORDER_QUANTITY, SHIPPING_STATUS from book, order_, purchaser, product" +
+                " Where book.ISBN = product.ISBN AND order_.OID = purchaser.OID And order_.OID = product.OID And purchaser.UID_ = ?");
+                ostmt.setString(1, _uid);
+                ResultSet rs = ostmt.executeQuery(); /* Print result here */ 
+                
+                if (rs.next() == false) { 
+                    System.out.println("No order for UID: " + _uid);
+                    return;
+                } else { 
+                    do {                 
+                        System.out.println("OID: " + rs.getString(1) + " UID: " + rs.getString(2) 
+                        + " Date: " + rs.getString(4) + " ISBN: " + rs.getString(3)
+                        + " Quantity: " + rs.getString(5) + " Status: " + rs.getString(6));
+                    } while (rs.next()); 
+                }
             }
         } catch (Exception e) {
             System.out.println("ERROR: " + e);
