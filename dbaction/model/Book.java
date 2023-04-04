@@ -146,6 +146,7 @@ public class Book {
             ResultSet rs = stmt.executeQuery();               
             if (!rs.next()) {
                 System.out.println("No result: Book does not exists");
+                return;
             }else{
                 while (rs.next()) {
                     System.out.print("Result: \n");
@@ -159,6 +160,7 @@ public class Book {
         } catch (SQLException e) {
             System.out.println("ERROR: " + e);
         }
+        return;
     }
 
     public static void search_by_Authors(Connection conn, String AuthorName) throws SQLException{
