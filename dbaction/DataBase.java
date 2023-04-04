@@ -328,9 +328,9 @@ public class DataBase {
                 System.out.println("No orders in the " + status + " status.");
             }else{
               System.out.println("\nThe following orders are in the " + status + " status:");
-              while (rs.next()) {
+              do {
                 System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getString("Order_DateTime") + " Shipping Status: " + rs.getString("Shipping_Status"));
-              }
+              }while (rs.next());
             }
             rs.close();
             pstmt.close();

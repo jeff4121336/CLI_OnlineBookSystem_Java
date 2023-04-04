@@ -144,13 +144,17 @@ public class Book {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM book WHERE LOWER(Title) LIKE LOWER(?)");
             stmt.setString(1, "%" + Title + "%");
             ResultSet rs = stmt.executeQuery();               
-            while (rs.next()) {
-                System.out.print("Result: \n");
-                System.out.println("ISBN: " + rs.getString(1) + "\nTitle: " + rs.getString(2) 
-                + "\nPrice: " + rs.getString(3) + "\nQuantity: " + rs.getString(4));
-                fetch_authors(conn ,rs.getString(1));
+            if (!rs.next()) {
+                System.out.println("No result: Book does not exists");
+                return;
+            }else{
+                do{
+                    System.out.print("Result: \n");
+                    System.out.println("ISBN: " + rs.getString(1) + "\nTitle: " + rs.getString(2) 
+                    + "\nPrice: " + rs.getString(3) + "\nQuantity: " + rs.getString(4));
+                    fetch_authors(conn ,rs.getString(1));
+                } while (rs.next()); 
             }
-            
             rs.close();
             stmt.close();
         } catch (SQLException e) {
