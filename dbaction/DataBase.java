@@ -324,13 +324,13 @@ public class DataBase {
             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ORDER_ WHERE Shipping_Status=? ORDER BY OID");
             pstmt.setString(1, status);
             ResultSet rs = pstmt.executeQuery();
-            System.out.println("\nThe following orders are in the " + status + " status:");
-            if (rs==null) {
+            if (!rs.next()) {
                 System.out.println("No orders in the " + status + " status.");
             }else{
-                while (rs.next()) {
-                  System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getString("Order_DateTime") + " Shipping Status: " + rs.getString("Shipping_Status"));
-                }
+              System.out.println("\nThe following orders are in the " + status + " status:");
+              while (rs.next()) {
+                System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getString("Order_DateTime") + " Shipping Status: " + rs.getString("Shipping_Status"));
+              }
             }
             rs.close();
             pstmt.close();
