@@ -53,7 +53,7 @@ public class Book {
     }
 
     public static boolean insert(Connection conn, String ISBN, String Title, String[] Authors, int Price, int Inventory_Quantity) throws SQLException {
-        boolean isInputValid=true;
+        boolean isInsertSuccess=true;
         ISBN = ISBN.trim();
         Title = Title.trim();
         for (int i=0; i<Authors.length; i++) {
@@ -63,27 +63,39 @@ public class Book {
         if (!isValid_ISBN(ISBN) || !isValid_Title(Title) || !isValid_Authors(Authors) || !isValid_Price(Price) || !isValid_Inventory_Quantity(Inventory_Quantity)){
             return false;
         }
-        
+        PreparedStatement pstmt_insert_book = conn.prepareStatement("INSERT INTO book values(?,?,?,?)");
         try {
-            PreparedStatement pstmt_insert_book = conn.prepareStatement("INSERT INTO book values(?,?,?,?)");
             pstmt_insert_book.setString(1, ISBN);
             pstmt_insert_book.setString(2, Title);
             pstmt_insert_book.setInt(3, Price);
             pstmt_insert_book.setInt(4, Inventory_Quantity);
             pstmt_insert_book.executeUpdate();
-            pstmt_insert_book.close();
+            
         } catch (SQLException e) {
             System.out.println(e+"in book insertion");
+            return false;
         }
+        pstmt_insert_book.close();
+
         PreparedStatement pstmt_insert_author = conn.prepareStatement("INSERT INTO author values(?)");
         PreparedStatement pstmt_insert_write = conn.prepareStatement("INSERT INTO write_ values(?,?)");
+        PreparedStatement pstmt_find_author = conn.prepareStatement("SELECT name FROM author WHERE name = ?");
         for (String author : Authors) {
-            // insert to author
             try {
-                pstmt_insert_author.setString(1, author);
-                pstmt_insert_author.executeUpdate();
-            } catch (SQLException e) {  // don't know how to implement "insert if not exist" so I just throw away the error if it happened
-                //System.out.println(e); // for debugging: should be commented out at the end (it is normal to have this error)
+                // check author not exist
+                pstmt_find_author.setString(1, author);
+                ResultSet rs = pstmt_find_author.executeQuery();
+                if (!rs.next()){
+                    // insert to author
+                    pstmt_insert_author.setString(1, author);
+                    pstmt_insert_author.executeUpdate();
+                }
+            } catch (SQLException e) {
+                System.out.println(e+"in author insertion");
+                pstmt_find_author.close();
+                pstmt_insert_author.close();
+                pstmt_insert_write.close();
+                return false;
             }
             // insert to write
             try {
@@ -92,12 +104,17 @@ public class Book {
                 pstmt_insert_write.executeUpdate();
             } catch (SQLException e) {
                 System.out.println(e+"in write insertion");
+                pstmt_find_author.close();
+                pstmt_insert_author.close();
+                pstmt_insert_write.close();
+                return false;
             }
             
         }
+        pstmt_find_author.close();
         pstmt_insert_author.close();
         pstmt_insert_write.close();
-        return isInputValid;
+        return isInsertSuccess;
     }
     
     public static int size(Connection conn) throws SQLException{

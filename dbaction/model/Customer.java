@@ -29,7 +29,7 @@ public class Customer {
     }
 
     public static boolean insert(Connection conn, String UID, String Name, String Address) throws SQLException{
-        boolean isInputValid = true;
+        boolean isInsertSuccess = true;
         UID = UID.trim();
         Name = Name.trim();
         Address = Address.trim();
@@ -38,12 +38,19 @@ public class Customer {
         }
         // insert to customer
         PreparedStatement pstmt = conn.prepareStatement("INSERT INTO customer values(?,?,?)");
-        pstmt.setString(1, UID);
-        pstmt.setString(2, Name);
-        pstmt.setString(3, Address);
-        pstmt.executeUpdate();
-        pstmt.close();
-        return isInputValid;
+        try {
+            pstmt.setString(1, UID);
+            pstmt.setString(2, Name);
+            pstmt.setString(3, Address);
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e+"in customer insertion");
+            pstmt.close();
+            return false;
+        }
+        
+        return isInsertSuccess;
     }
 
     public static int size(Connection conn) throws SQLException{
