@@ -121,7 +121,7 @@ public class Order {
                     return;
                 }
             } else {
-                System.out.println("ERROR: No update is done");
+                System.out.println("ERROR: No update is done. No order with OID : "+OID+ " is found.");
                 return;
             }
             
