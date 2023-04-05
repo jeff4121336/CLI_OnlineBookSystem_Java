@@ -414,7 +414,7 @@ public class DataBase {
       try {    
         String[] statusValues = {"ordered", "shipped", "received"};
         /* Debug */
-        Order.Order_Shipping(conn);
+        // Order.Order_Shipping(conn);
         /* Debug */
         for (String status : statusValues) {
             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ORDER_ WHERE Shipping_Status=? ORDER BY OID");
