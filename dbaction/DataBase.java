@@ -277,15 +277,11 @@ public class DataBase {
         }
         
         System.out.println("Order insert process finished");
+        Timer timer = new Timer();
+        timer.schedule(new MyTask(), 30000);
         return;
       }
-
-      System.out.println("Order insert process finished");
-
-      Timer timer = new Timer();
-      timer.schedule(new MyTask(), 30000);
-      return;
-    }
+    
     
     public void Order_history_check(Scanner s) {
       System.out.println("Check History Order by UID...");
