@@ -142,6 +142,7 @@ public class BookSystem{
 
     private void Operation_5_Menu(Scanner s) {
         db.Quit_program();
+        System.exit(0);
     }
 
 }
