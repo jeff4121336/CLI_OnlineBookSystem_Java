@@ -11,6 +11,12 @@ public class dbtime {
         return d.format(now);
     }
 
+    public static String currentDate(){
+        DateTimeFormatter d = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime now = LocalDateTime.now();
+        return d.format(now);
+    }
+
     public static int timecount(String OrderTime) { /* Accurate to one day */
         int diff = -1;
         String TimeInDigit = OrderTime.replaceAll("[^0-9]", " ");

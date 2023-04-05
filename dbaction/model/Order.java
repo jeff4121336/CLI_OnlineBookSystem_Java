@@ -31,7 +31,7 @@ public class Order {
         return true;
     }
 
-    public static boolean insert(Connection conn, String OID, String UID, String Order_DateTime, String ISBN, int Order_Quantity, String Shipping_Status) throws SQLException{
+    public static boolean insert(Connection conn, String OID, String UID, Date Order_Date, String ISBN, int Order_Quantity, String Shipping_Status) throws SQLException{
         boolean isInsertSuccess = true;
         OID = OID.trim();
         UID = UID.trim();
@@ -46,7 +46,7 @@ public class Order {
         PreparedStatement pstmt_order = conn.prepareStatement("INSERT INTO order_ values(?,?,?)");
         try {
             pstmt_order.setString(1, OID);
-            pstmt_order.setString(2, Order_DateTime);
+            pstmt_order.setDate(2, Order_Date);
             pstmt_order.setString(3, Shipping_Status);
             pstmt_order.executeUpdate();
             pstmt_order.close();
@@ -139,7 +139,7 @@ public class Order {
             if (!nrs.next()){
                 System.out.println("No customer with UID " + _uid + " exixts");
             }else{
-                PreparedStatement ostmt = conn.prepareStatement("SELECT order_.OID, UID_, book.ISBN, Order_DateTime, ORDER_QUANTITY, SHIPPING_STATUS from book, order_, purchaser, product" +
+                PreparedStatement ostmt = conn.prepareStatement("SELECT order_.OID, UID_, book.ISBN, Order_Date, ORDER_QUANTITY, SHIPPING_STATUS from book, order_, purchaser, product" +
                 " Where book.ISBN = product.ISBN AND order_.OID = purchaser.OID And order_.OID = product.OID And purchaser.UID_ = ?");
                 ostmt.setString(1, _uid);
                 ResultSet rs = ostmt.executeQuery(); /* Print result here */ 
@@ -150,7 +150,7 @@ public class Order {
                 } else { 
                     do {                 
                         System.out.println("OID: " + rs.getString(1) + " UID: " + rs.getString(2) 
-                        + " Date: " + rs.getString(4) + " ISBN: " + rs.getString(3)
+                        + " Date: " + rs.getDate(4).toString() + " ISBN: " + rs.getString(3)
                         + " Quantity: " + rs.getString(5) + " Status: " + rs.getString(6));
                     } while (rs.next()); 
                 }
@@ -162,7 +162,7 @@ public class Order {
     }
 
     public static void Order_Shipping(Connection conn) throws SQLException {
-        PreparedStatement shipping_stmt = conn.prepareStatement("SELECT Order_DateTime, OID FROM ORDER_ WHERE Shipping_Status=?");
+        PreparedStatement shipping_stmt = conn.prepareStatement("SELECT Order_Date, OID FROM ORDER_ WHERE Shipping_Status=?");
         shipping_stmt.setString(1, "ordered");
         ResultSet shipping_stmtrs = shipping_stmt.executeQuery();
         if (!shipping_stmtrs.next())  
@@ -176,6 +176,26 @@ public class Order {
             } while (shipping_stmtrs.next());
         }
         return;
+    }
+
+    public static int nextOidInt(Connection conn) throws SQLException{
+        int max = -1;
+        int oidInt;
+        try {
+            PreparedStatement pstmt = conn.prepareStatement("SELECT OID FROM order_");
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                oidInt = Integer.parseInt(rs.getString(1));
+                if (oidInt>max){
+                    max = oidInt;
+                }
+            }
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        
+        return max+1;
     }
 
 }

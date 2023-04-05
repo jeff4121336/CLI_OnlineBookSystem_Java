@@ -46,7 +46,7 @@ public class DataBase {
       Statement stmt = conn.createStatement();
       String[] createTable={ "CREATE TABLE book ( ISBN VARCHAR(13) PRIMARY KEY, Title VARCHAR2(100), Price INTEGER, Inventory_Quantity INTEGER)",
       "CREATE TABLE customer (UID_ VARCHAR2(10) PRIMARY KEY, Name VARCHAR2(50), Address VARCHAR2(200))",
-      "CREATE TABLE order_ (OID VARCHAR2(8) PRIMARY KEY, Order_DateTime VARCHAR2(200), Shipping_Status VARCHAR2(20))",
+      "CREATE TABLE order_ (OID VARCHAR2(8) PRIMARY KEY, Order_Date DATE, Shipping_Status VARCHAR2(20))",
       "CREATE TABLE author (Name VARCHAR2(50) PRIMARY KEY)",
       "CREATE TABLE write_ (Name VARCHAR2(50),ISBN VARCHAR2(13),PRIMARY KEY (Name, ISBN),FOREIGN KEY (Name) REFERENCES author(Name),FOREIGN KEY (ISBN) REFERENCES book(ISBN))",
       "CREATE TABLE product (OID VARCHAR2(8),ISBN VARCHAR2(13),Order_Quantity INTEGER,PRIMARY KEY (OID, ISBN),FOREIGN KEY (OID) REFERENCES order_(OID),FOREIGN KEY (ISBN) REFERENCES book(ISBN))",
@@ -101,7 +101,8 @@ public class DataBase {
         while (myReader.hasNextLine()) {
           String[] data = myReader.nextLine().split("\t");
           //System.out.println(data[0] + ", " + data[1] + ", " + data[2] + ", " + data[3]  + ", " + Integer.parseInt(data[4]) + ", " + data[5]);
-          Order.insert(conn, data[0], data[1], data[2], data[3], Integer.parseInt(data[4]), data[5]);
+          Date date = Date.valueOf(data[2]);
+          Order.insert(conn, data[0], data[1], date, data[3], Integer.parseInt(data[4]), data[5]);
         }
         myReader.close();
       } catch (FileNotFoundException e) {
@@ -146,7 +147,7 @@ public class DataBase {
       
       String uid;
       int nextOid;
-      String time;
+      //String time;
       try {
         PreparedStatement checkISBNandQuan = conn.prepareStatement("SELECT ISBN, Inventory_Quantity FROM book");
         ResultSet rs = checkISBNandQuan.executeQuery();
@@ -214,13 +215,31 @@ public class DataBase {
           // }
           // _name = _info[0];
           // _address = _info[1];
+          System.out.println("Create your UID: (maximum length is 10)");
+          uid = s.nextLine();
+          if (!Customer.isValid_UID(uid)){
+            return;
+          }
+          try {
+            PreparedStatement pstmt = conn.prepareStatement("SELECT UID_ FROM customer WHERE UID_= ?");
+            pstmt.setString(1, uid);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()){
+              System.out.println("UID already exist");
+              return;
+            }
+            pstmt.close();
+          } catch (SQLException e) {
+            System.out.println("fail to verify the UID");
+            return;
+          }
           System.out.println("Enter your personal info: ");
           System.out.println("- Enter your name: ");
           _name = s.nextLine();
           System.out.println("- Enter your address: (The components of the address are delimited by (,))");
           _address = s.nextLine();
           try {
-            uid = Integer.toString(Customer.size(conn) + 1);
+            //uid = Integer.toString(Customer.size(conn) + 1);
             if(!Customer.insert(conn, uid, _name, _address)) {
               System.out.println("Customer info insert failed.");
               return;
@@ -264,17 +283,21 @@ public class DataBase {
         }
         
         try {
-          nextOid = Order.size(conn) + 1;
-          time = dbtime._dbtime();
-          
+          //nextOid = Order.size(conn) + 1;
+          //time = dbtime._dbtime();
+          nextOid = Order.nextOidInt(conn);
+          Date date = Date.valueOf(dbtime.currentDate());
           int ordercount = 0;
           
           
-          
           for (int i = 0; i < _input.length; i += 2, ordercount++) {
+            if (nextOid+ordercount>99999999){
+              System.out.println("fail to generate OID");
+              return;
+            }
             if (!Book.update(conn, _input[i], Integer.parseInt(_input[i + 1]))) 
             return;
-            if (!(Order.insert(conn, Integer.toString(nextOid + ordercount), uid, time,_input[i], Integer.parseInt(_input[i + 1]), "ordered"))) {
+            if (!(Order.insert(conn, Integer.toString(nextOid + ordercount), uid, date,_input[i], Integer.parseInt(_input[i + 1]), "ordered"))) {
               System.out.println("Order insert failed.");
               return;
             }
@@ -402,7 +425,7 @@ public class DataBase {
             }else{
               System.out.println("\nThe following orders are in the " + status + " status:");
               do {
-                System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getString("Order_DateTime") + " Shipping Status: " + rs.getString("Shipping_Status"));
+                System.out.println("Order ID: " + rs.getString("OID") + " Order Date: " + rs.getDate("Order_Date").toString() + " Shipping Status: " + rs.getString("Shipping_Status"));
               }while (rs.next());
             }
             rs.close();
