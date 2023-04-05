@@ -2,8 +2,6 @@ package dbaction.model;
  
 import java.sql.*;
 
-import dbaction.dbtime;
-
 public class Order {
 
     public static boolean isValid_OID(String OID){

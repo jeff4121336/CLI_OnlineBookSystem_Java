@@ -138,7 +138,7 @@ public class DataBase {
     
     public void Order_place(Scanner s) {
       System.out.println("Place an Order...");
-      String[] _input, _info;
+      String[] _input;
       String _name, _address;
       int bookcounter = 0;
 
@@ -538,7 +538,12 @@ public class DataBase {
         do {
           for(int i = 1 ; i <= columnsNumber; i++){
             String columnsName = rsmd.getColumnName(i);
-            System.out.print(columnsName + ": " + prs.getString(i) + "  ");
+            if (_table == 4 && i == 2){
+              String[] temp = prs.getString(i).split(" ");
+              System.out.print(columnsName + ": " + temp[0] + "  ");
+            }else{
+              System.out.print(columnsName + ": " + prs.getString(i) + "  ");
+            }
           }
           System.out.println(); 
         } while(prs.next());
