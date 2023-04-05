@@ -134,8 +134,6 @@ public class DataBase {
       }, 30000);
     }
 
-    
-    
     public void Order_place(Scanner s) {
       System.out.println("Place an Order...");
       String[] _input;
@@ -274,10 +272,12 @@ public class DataBase {
               return;
             }
           } else {
-            if (!Order.isValid_Order_Quantity(Integer.parseInt(_input[i]))){
+            try {
+              Order.isValid_Order_Quantity(Integer.parseInt(_input[i]));
+            } catch (NumberFormatException e) {
               System.out.println("Invaild/missing Quantity"); 
               return;
-            }  
+            }
             /* Excess Quantity detect later (in book.update) */
           }
         }
