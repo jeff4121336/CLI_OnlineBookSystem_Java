@@ -174,7 +174,7 @@ public class DataBase {
       _input = input.split("[,]");
 
       System.out.println("Are you an existing user having your own UID? (Y/N)");
-      String input_isExistingUser = s.nextLine();
+      String input_isExistingUser = s.nextLine().toUpperCase();
       switch(input_isExistingUser){
         case "Y":
           System.out.println("Enter your UID: ");
