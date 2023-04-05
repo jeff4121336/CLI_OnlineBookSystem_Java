@@ -526,6 +526,9 @@ public class DataBase {
           printstmt = conn.prepareStatement("SELECT * FROM purchaser");
           break;
       }
+      if (printstmt == null) {
+        System.out.println("The table does not exist.");
+      }
       ResultSet prs = printstmt.executeQuery();
       ResultSetMetaData rsmd = prs.getMetaData();
       int columnsNumber = rsmd.getColumnCount();

@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 import dbaction.*;
-import dbaction.model.*;
 
 public class BookSystem{
 
