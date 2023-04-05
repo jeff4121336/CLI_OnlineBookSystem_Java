@@ -1,5 +1,4 @@
 # onlinebooksystem
-/* Project Finished Tag */
 CSCI3170
 
 Data files in /booksystem/data
