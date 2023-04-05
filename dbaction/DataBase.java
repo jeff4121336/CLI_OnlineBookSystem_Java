@@ -528,6 +528,7 @@ public class DataBase {
       }
       if (printstmt == null) {
         System.out.println("The table does not exist.");
+        return;
       }
       ResultSet prs = printstmt.executeQuery();
       ResultSetMetaData rsmd = prs.getMetaData();
