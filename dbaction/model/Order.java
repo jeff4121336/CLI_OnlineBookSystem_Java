@@ -165,26 +165,14 @@ public class Order {
         PreparedStatement shipping_stmt = conn.prepareStatement("SELECT Order_DateTime, OID FROM ORDER_ WHERE Shipping_Status=?");
         shipping_stmt.setString(1, "ordered");
         ResultSet shipping_stmtrs = shipping_stmt.executeQuery();
-        int time;
         if (!shipping_stmtrs.next())  
             return;
         else {
             do {
-               time = dbtime.timecount(shipping_stmtrs.getString(1));
-
-               if (time > 30) { /* 30 seconds */
-                /* DEBUG For shipping */
-                if (time >= 86401) {
-                    System.out.println("ORDER TIME PASSED: >1 day, " + "UPDATE TO SHIPPED FOR OID: " + shipping_stmtrs.getString(2) + "\n");
-                } else {
-                    System.out.println("ORDER TIME PASSED: " + time + " second(s), " + "UPDATE TO SHIPPED FOR OID: " + shipping_stmtrs.getString(2) + "\n");
-                }
-
                 PreparedStatement update_stmt = conn.prepareStatement("UPDATE ORDER_ SET Shipping_Status = ? Where OID = ?");
                 update_stmt.setString(1, "shipped");
                 update_stmt.setString(2, shipping_stmtrs.getString(2));
                 update_stmt.executeQuery();
-               }
             } while (shipping_stmtrs.next());
         }
         return;
