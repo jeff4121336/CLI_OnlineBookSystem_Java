@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 import dbaction.*;
+import dbaction.model.*;
 
 public class BookSystem{
 
@@ -56,8 +57,8 @@ public class BookSystem{
                 Operation_4_Menu(s);
                 break;
             case 5:
-                Operation_5_Menu(s);
-                break;
+            Operation_5_Menu(s);
+            break;
         }
         if (i>0 && i<5){
             System.out.println("Press enter to return to main menu");
@@ -140,7 +141,7 @@ public class BookSystem{
     }
 
     private void Operation_5_Menu(Scanner s) {
-        
+        db.Quit_program();
     }
 
 }

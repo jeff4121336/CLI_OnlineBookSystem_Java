@@ -121,7 +121,7 @@ public class Order {
                     return;
                 }
             } else {
-                System.out.println("ERROR: No update is done");
+                System.out.println("ERROR: No update is done. No order with OID : "+OID+ " is found.");
                 return;
             }
             
@@ -162,7 +162,7 @@ public class Order {
     }
 
     public static void Order_Shipping(Connection conn) throws SQLException {
-        PreparedStatement shipping_stmt = conn.prepareStatement("SELECT Order_Date, OID FROM ORDER_ WHERE Shipping_Status=?");
+        PreparedStatement shipping_stmt = conn.prepareStatement("SELECT OID FROM ORDER_ WHERE Shipping_Status=?");
         shipping_stmt.setString(1, "ordered");
         ResultSet shipping_stmtrs = shipping_stmt.executeQuery();
         if (!shipping_stmtrs.next())  
@@ -171,7 +171,7 @@ public class Order {
             do {
                 PreparedStatement update_stmt = conn.prepareStatement("UPDATE ORDER_ SET Shipping_Status = ? Where OID = ?");
                 update_stmt.setString(1, "shipped");
-                update_stmt.setString(2, shipping_stmtrs.getString(2));
+                update_stmt.setString(2, shipping_stmtrs.getString(1));
                 update_stmt.executeQuery();
             } while (shipping_stmtrs.next());
         }

@@ -549,5 +549,15 @@ public class DataBase {
     }
 
   }
+  public void Quit_program(){
+    try{
+      Order.Order_Shipping(conn);
+      System.out.println("Shipped all ordered orders");
+    } catch (SQLException e) {
+      System.out.println("Error for update to database: " + e);
+    }
+    System.out.println("Thanks for using our program! ByeBye");
+  }
+  
   }
   
