@@ -3,11 +3,20 @@ import java.sql.*;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Scanner;
-
+import java.util.Timer;
+import java.util.TimerTask;
 
 import dbaction.model.*;
 
+
+
 public class DataBase {
+  public static class MyTask extends TimerTask {
+    @Override
+    public void run() {
+        System.out.println("hello world");
+    }
+  }
   
   private final String url = "jdbc:oracle:thin:@//db18.cse.cuhk.edu.hk:1521/oradb.cse.cuhk.edu.hk";
   private final String user = "h022";
@@ -226,6 +235,9 @@ public class DataBase {
       }
 
       System.out.println("Order insert process finished");
+
+      Timer timer = new Timer();
+      timer.schedule(new MyTask(), 30000);
       return;
     }
     
