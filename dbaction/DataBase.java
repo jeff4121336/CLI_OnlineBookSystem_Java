@@ -534,7 +534,7 @@ public class DataBase {
       int columnsNumber = rsmd.getColumnCount();
       
       if (prs.next() == false) { 
-        System.out.println("No such table");
+        System.out.println("The table does not have information.");
         return;
       } else { 
         System.out.println(" ");
