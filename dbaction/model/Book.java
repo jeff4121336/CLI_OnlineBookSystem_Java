@@ -243,7 +243,7 @@ public class Book {
             if (originalvalue - orderquantity < 0) {
                 System.out.println("Excess quantity has been entered. There are only " + originalvalue 
                 + " book (for ISBN: " + ISBN + ")in our library, but you ordered " + orderquantity + ".");
-                System.out.println("Previous order(s) has been accepted, but current/furhter order(s) has been aborted");
+                System.out.println("Previous order(s) has been accepted, but current/further order(s) has been aborted");
                 return false;
             }
 
