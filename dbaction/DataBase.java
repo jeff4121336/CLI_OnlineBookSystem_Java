@@ -1,3 +1,4 @@
+/* Project Finished Tag */
 package dbaction;
 import java.sql.*;
 import java.io.*;
@@ -526,12 +527,16 @@ public class DataBase {
           printstmt = conn.prepareStatement("SELECT * FROM purchaser");
           break;
       }
+      if (printstmt == null) {
+        System.out.println("The table does not exist.");
+        return;
+      }
       ResultSet prs = printstmt.executeQuery();
       ResultSetMetaData rsmd = prs.getMetaData();
       int columnsNumber = rsmd.getColumnCount();
       
       if (prs.next() == false) { 
-        System.out.println("No such table");
+        System.out.println("The table does not have information.");
         return;
       } else { 
         System.out.println(" ");
